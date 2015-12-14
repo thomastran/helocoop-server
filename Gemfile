@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 ruby '2.2.3'
 gem 'rails', '4.2.0'
-gem 'sqlite3'
 gem 'pg'
 
 # Gems used only for assets and not required
@@ -22,3 +21,6 @@ group :test do
   gem 'rspec-rails'
   gem 'database_cleaner'
 end
+
+
+gem 'rails_12factor', group: :production
