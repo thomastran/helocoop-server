@@ -8,14 +8,12 @@ class CallController < ApplicationController
   private
 
   def twilio_reponse
-    twilio_number = "+14157809231"
-
     Twilio::TwiML::Response.new do |response|
-      response.Dial callerId: twilio_number do |dial|
+      response.Dial callerId: params[:Caller] do |dial|
         if params.include?(:phoneNumber)
           dial.Number params[:phoneNumber]
         else
-          dial.Client('support_agent')
+          dial.Client(params[:To])
         end
       end
     end

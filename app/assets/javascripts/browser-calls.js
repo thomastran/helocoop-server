@@ -17,7 +17,7 @@ function updateCallStatus(status) {
 
 /* Get a Twilio Client token with an AJAX request */
 $(document).ready(function() {
-  $.post("/token/generate", {page: window.location.pathname}, function(data) {
+  $.post("/token/generate", {from_contact: "thomas"}, function(data) {
     // Set up the Twilio Client Device with the token
     Twilio.Device.setup(data.token);
   });
@@ -35,7 +35,7 @@ Twilio.Device.error(function (error) {
 
 /* Callback to determine if "support_agent" is available or not */
 Twilio.Device.presence(function(presenceEvent) {
-  if (presenceEvent.from === 'support_agent') {
+  if (presenceEvent.from === 'contact1') {
     if (presenceEvent.available) {
       $("#support-unavailable").hide();
     } else {
@@ -100,9 +100,8 @@ function callCustomer(phoneNumber) {
 function callSupport() {
   updateCallStatus("Calling support...");
 
-  // Our backend will assume that no params means a call to support_agent
-  Twilio.Device.connect();
-}
+  var params = {"To": "contact1"};
+  Twilio.Device.connect(params);}
 
 /* End a call */
 function hangUp() {

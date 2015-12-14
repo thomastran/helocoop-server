@@ -11,13 +11,8 @@ class TwilioCapability
     application_sid = "AP5700a88d7191590fcf7df7432bc4f7a6"
     capability.allow_client_outgoing application_sid
 
-    (all_clients - [from_contact]).each {|role| capability.allow_client_incoming role}
-    # capability.allow_client_incoming role
+    capability.allow_client_incoming from_contact
     capability.generate
-  end
-
-  def self.all_clients
-    %w(contact1 contact2 contact3 contact4 contact5 contact6 contact7)
   end
 
 end
