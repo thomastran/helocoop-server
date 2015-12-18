@@ -9,7 +9,7 @@ env:
   global:
     - TWILIO_ACCOUNT_SID=AC6825c3d1d47edc3cabf866d484a1f356
     - TWILIO_AUTH_TOKEN=cc4ef8ad2e7cddc3d27e7e9f29451e18
-    - TWIML_APPLICATION_SID=AP5700a88d7191590fcf7df7432bc4f7a6
+    - TWIML_APPLICATION_SID=AP2b259ef36b0e7b35e042598fbdd6f7fa
 
 addons:
   postgresql: "9.4"
