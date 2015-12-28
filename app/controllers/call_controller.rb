@@ -33,23 +33,25 @@ class CallController < ApplicationController
             endConfenrence = "true"
           end
 
-          if params.include?(:Client)
-            currentClient = params[:Client]
-          end
+          # if params.include?(:Client)
+          #   currentClient = params[:Client]
+          # end
 
           dial.Conference conference,
             waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
             muted:  "false",
             startConferenceOnEnter: "true",
             endConferenceOnExit: endConfenrence
-
-          puts currentClient + " has joined the conference room"
         else  #  conference
           Rails.logger.info "Call Client"
           dial.Client(params[:To])
         end
       end
     end
+  end
+
+  def check_Other_Client_Connect
+
   end
 
   def callclient(account_sid, auth_token, ary)
