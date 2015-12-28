@@ -66,10 +66,11 @@ class CallController < ApplicationController
   end
 
   def showStatus
+
+    puts "We come here baby"
     # Loop over conferences and print out a property for each one
     @client.account.conferences.list({
-        :status => "in-progress",
-        :friendly_name => "MyRoom"}).each do |conference|
+        :status => "in-progress"}).each do |conference|
         puts conference.status
     end
   end
