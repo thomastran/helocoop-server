@@ -32,7 +32,7 @@ class CallController < ApplicationController
             Rails.logger.info account_sid
             endConfenrence = "true"
           end
-
+          showStatus
           dial.Conference conference,
             waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
             muted:  "false",
