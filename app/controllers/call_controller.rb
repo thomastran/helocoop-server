@@ -30,13 +30,20 @@ class CallController < ApplicationController
             auth_token  = ENV['TWILIO_AUTH_TOKEN']
             callclient(account_sid, auth_token, ary)
             Rails.logger.info account_sid
-          endConfenrence = "true"
+            endConfenrence = "true"
           end
+
+          if params.include?(:Client)
+            currentClient = params[:Client]
+          end
+
           dial.Conference conference,
             waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
             muted:  "false",
             startConferenceOnEnter: "true",
             endConferenceOnExit: endConfenrence
+
+          puts currentClient + " has joined the conference room"
         else  #  conference
           Rails.logger.info "Call Client"
           dial.Client(params[:To])
