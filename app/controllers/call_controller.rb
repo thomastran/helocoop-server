@@ -5,6 +5,10 @@ class CallController < ApplicationController
     render xml: twilio_reponse.to_xml
   end
 
+  def showConferenceStatus
+    render xml: showStatus.to_xml
+  end
+
   private
 
   def twilio_reponse
@@ -32,7 +36,7 @@ class CallController < ApplicationController
             Rails.logger.info account_sid
             endConfenrence = "true"
           end
-          showStatus
+
           dial.Conference conference,
             waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
             muted:  "false",
@@ -66,13 +70,11 @@ class CallController < ApplicationController
   end
 
   def showStatus
-
-    puts "We come here baby"
     # Loop over conferences and print out a property for each one
-    @client.account.conferences.list({
-        :status => "in-progress"}).each do |conference|
-        puts conference.status
+    @client.account.conferences.list.each do |conference|
+      puts conference.status
     end
   end
+
 
 end
