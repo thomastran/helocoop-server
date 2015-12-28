@@ -31,12 +31,10 @@ class CallController < ApplicationController
             callclient(account_sid, auth_token, ary)
             Rails.logger.info account_sid
             endConfenrence = "true"
+          else
+            puts params[:Client] " has joined the Conference"
           end
-
-          # if params.include?(:Client)
-          #   currentClient = params[:Client]
-          # end
-
+          
           dial.Conference conference,
             waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
             muted:  "false",
