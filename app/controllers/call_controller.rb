@@ -34,7 +34,7 @@ class CallController < ApplicationController
             waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
             muted:  "false",
             startConferenceOnEnter: "true",
-            endConferenceOnEnter: "true"
+            endConferenceOnExit: "true"
         else  #  conference
           Rails.logger.info "Call Client"
           dial.Client(params[:To])
