@@ -6,7 +6,7 @@ class CallController < ApplicationController
   end
 
   def showConferenceStatus
-    render xml: showStatus.to_xml
+    render json: { status: showStatus }
   end
 
   private
@@ -50,10 +50,6 @@ class CallController < ApplicationController
     end
   end
 
-  def check_Other_Client_Connect
-
-  end
-
   def callclient(account_sid, auth_token, ary)
     # ary.each { |a| Rails.logger.info a }
     @client = Twilio::REST::Client.new account_sid, auth_token
@@ -70,11 +66,36 @@ class CallController < ApplicationController
   end
 
   def showStatus
-    # Loop over conferences and print out a property for each one
-    @client.account.conferences.list.each do |conference|
-      puts conference.status
+    ary = Array.new
+    if params.include?(:People)
+      people = params[:People]
+      ary = people.chomp.split(' ')
+      Rails.logger.info ary
+    end
+    account_sid = ENV['TWILIO_ACCOUNT_SID']
+    auth_token  = ENV['TWILIO_AUTH_TOKEN']
+    @client = Twilio::REST::Client.new account_sid, auth_token
+    status = false
+    @id_conference = ' '
+    @client.account.conferences.list({
+      :status => "in-progress",
+      :friendlyName => "Myroom"}).each do |conference|
+      # status = true
+      puts conference.sid
+      @id_conference = conference.sid
+    end
+
+    count_participant = @client.account.conferences.get(@id_conference).participants.list.size
+    puts count_participant
+
+    if count_participant < 2
+      callclient(account_sid, auth_token, ary)
+    end
+    if count_participant  >= 2
+      return true
+    else
+      return false
     end
   end
-
 
 end

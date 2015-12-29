@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   get 'dashboard' => 'dashboard#index'
   post 'token/generate' => 'token#generate'
   post 'call/connect' => 'call#connect'
-  get 'conference' => 'token#showConferenceStatus'
+  post 'conference' => 'call#showConferenceStatus'
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
   #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
