@@ -87,9 +87,7 @@ class CallController < ApplicationController
 
     count_participant = @client.account.conferences.get(@id_conference).participants.list.size
     puts count_participant
-    # if count_participant < 2
-    #   callclient(account_sid, auth_token, ary)
-    # end
+
     if count_participant  >= 2
       return true
     else
