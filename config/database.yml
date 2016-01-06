@@ -13,8 +13,12 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database:  browser_calls_rails_test
+  database:  dfc6nb5p3k8a1j
+  username: utwactytaktshy
+  password: sl9tJJfnbY74a9W7SZMdtTbeGq
 
 production:
   <<: *default
-  database:  browser_calls_rails_production
+  database:  dfc6nb5p3k8a1j
+  username: utwactytaktshy
+  password: sl9tJJfnbY74a9W7SZMdtTbeGq
