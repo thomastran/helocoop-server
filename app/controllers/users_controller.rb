@@ -4,6 +4,7 @@ class UsersController < ApplicationController
   def register
     activate_code = random_activate_code
     if params.include?(:phone_number)
+      send_sms params[:phone_number], activate_code
       user_temp = { "phone_number" => params[:phone_number], "code" => activate_code }
       @user = User.new(user_temp)
       if @user.save
@@ -63,6 +64,21 @@ class UsersController < ApplicationController
   end
 
   private
+
+  def send_sms(phone_number, activate_code)
+
+    account_sid = ENV['TWILIO_ACCOUNT_SID']
+    auth_token  = ENV['TWILIO_AUTH_TOKEN']
+
+    @client = Twilio::REST::Client.new account_sid, auth_token
+
+    @client.account.messages.create({
+      :from => '+14157809231',
+      :to => phone_number,
+      :body => activate_code
+    })
+
+  end
 
   def do_register
     if params.include?(:phone_number)
