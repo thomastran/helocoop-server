@@ -6,7 +6,7 @@ default: &default
 
 development:
   <<: *default
-  database:  dfc6nb5p3k8a1j
+  database: dfc6nb5p3k8a1j
   username: utwactytaktshy
   password: sl9tJJfnbY74a9W7SZMdtTbeGq
 
