@@ -4,17 +4,24 @@ class UsersController < ApplicationController
   def register
     activate_code = random_activate_code
     if params.include?(:phone_number)
+      user = User.find_by(phone_number: params[:phone_number])
       send_sms params[:phone_number], activate_code
-      user_temp = { "phone_number" => params[:phone_number], "code" => activate_code }
-      @user = User.new(user_temp)
-      if @user.save
-        result = { "success" => true, "message" => "created new phone number successfully" }
+      if user != nil
+        user_temp = { "code" => activate_code }
+        user.update(user_temp)
+        result = { "success" => true, "message" => "updated new phone number successfully" }
       else
-        result = { "success" => false, "message" => "created new phone number unsuccessfully" }
+        user_temp = { "phone_number" => params[:phone_number], "code" => activate_code }
+        @user = User.new(user_temp)
+        if @user.save
+          result = { "success" => true, "message" => "created new phone number successfully" }
+        else
+          result = { "success" => false, "message" => "created new phone number unsuccessfully" }
+        end
       end
     end
     render json: result
-  end
+  end 
 
   def update
     if params.include?(:phone_number) and params.include?(:name) and params.include?(:address) and params.include?(:email)
@@ -39,7 +46,7 @@ class UsersController < ApplicationController
         message = "activate successfully"
       else
         success = false
-        message = "phone number doesn't exist"
+        message = "phone number doesn't exist or code activate is not ok"
       end
     else
       success = false
