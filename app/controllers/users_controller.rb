@@ -1,12 +1,13 @@
 class UsersController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
-  def register
+  def request_code
     activate_code = random_activate_code
     if params.include?(:phone_number)
-      user = User.find_by(phone_number: params[:phone_number])
+      activate_code = params[:phone_number] + activate_code.to_s
       send_sms params[:phone_number], activate_code
-      if user != nil
+      if User.exists?(:phone_number => params[:phone_number])
+        user = User.find_by(phone_number: params[:phone_number])
         user_temp = { "code" => activate_code }
         user.update(user_temp)
         result = { "success" => true, "message" => "updated new phone number successfully" }
@@ -20,8 +21,8 @@ class UsersController < ApplicationController
         end
       end
     end
-    render json: result
-  end 
+    render json: result, status: 200
+  end
 
   def update
     if params.include?(:phone_number) and params.include?(:name) and params.include?(:address) and params.include?(:email)
@@ -36,7 +37,7 @@ class UsersController < ApplicationController
     end
   end
 
-  def activate_code
+  def verify_code
     if params.include?(:phone_number) and params.include?(:activate_code)
       user = User.find_by(phone_number: params[:phone_number], code: params[:activate_code])
       if user != nil
@@ -53,11 +54,23 @@ class UsersController < ApplicationController
       message = "please check the paramaters"
     end
     result = { "success" => success, "message" => message }
-    render json: result
+    render json: result, status: 200
   end
 
   def show_all_user
-    render json: User.all
+    address_first = Address.new 47.858205, 2.294359, nil
+    address_second = Address.new 40.748433, -73.985655, nil
+    address_third = Address.new 10.748433, -53.985655, nil
+    address_fourth = Address.new 60.748433, -23.985655, nil
+    arr_of_address = []
+    arr_of_address.push(address_first)
+    arr_of_address.push(address_second)
+    arr_of_address.push(address_third)
+    arr_of_address.push(address_fourth)
+    puts sort_by_distance(arr_of_address, address_first).to_s
+    puts arr_of_address.to_s
+    puts caculate_location address_first, address_second
+    render json: User.all, status: 200
   end
 
   def clear_data_user
@@ -67,7 +80,7 @@ class UsersController < ApplicationController
       success = false
     end
     result = { "success" => success }
-    render json: result
+    render json: result, status: 200
   end
 
   private
@@ -95,19 +108,19 @@ class UsersController < ApplicationController
   end
 
   def update_user(phone_number, email, address, name)
-    user_temp = { "email" => email, "address" => address, "name" => name }
+    token = generate_token
+    user_temp = { "email" => email, "address" => address, "name" => name, "token" => token }
     user = User.find_by(phone_number: phone_number)
-
     if user.update(user_temp)
       success = true
       message = "updated successfully"
+      token_response = token
     else
       success = false
       message = "updated unsuccessfully"
+      token_response = nil
     end
-
-    result = { "success" => success, "message" => message }
-
+    result = Info_Response.new(success, message, token_response)
     return result
   end
 
@@ -115,6 +128,26 @@ class UsersController < ApplicationController
   def random_activate_code
     prng = Random.new
     prng.rand(1000..9999)
+  end
+
+  def generate_token
+      # random_token = SecureRandom.urlsafe_base64(nil, false)
+      token = loop do
+        random_token = SecureRandom.urlsafe_base64(nil, false)
+        break random_token unless User.exists?(:token => random_token)
+      end
+      return token
+  end
+
+  def caculate_location(address_first, address_second)
+      Geocoder::Calculations.distance_between([address_first.getLatitude, address_first.getLongitude], [address_second.getLatitude, address_second.getLongitude])
+  end
+
+  def sort_by_distance(arr_of_address, initial_address)
+    arr_of_distance = []
+    arr_of_address.each { |address| arr_of_distance.push(Distance.new(caculate_location(address, initial_address), address.getToken)) }
+    arr_of_distance.sort! { |a,b| a.getMile <=> b.getMile }
+    return arr_of_distance
   end
 
 end

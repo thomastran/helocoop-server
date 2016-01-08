@@ -11,11 +11,11 @@ Rails.application.routes.draw do
   post 'call/connect' => 'call#connect'
   post 'conference' => 'call#showConferenceStatus'
 
-  post 'users/register' => 'users#register'
+  post 'users/requestcode' => 'users#request_code'
   post 'users/showalluser' => 'users#show_all_user'
   post 'users/update' => 'users#update'
   post 'users/clear' => 'users#clear_data_user'
-  post 'users/activate' => 'users#activate_code'
+  post 'users/verifycode' => 'users#verify_code'
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
   #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase

@@ -16,6 +16,7 @@ gem 'jquery-rails'
 gem 'turbolinks'
 gem 'twilio-ruby'
 gem 'figaro'
+gem 'geocoder'
 
 group :test do
   gem 'byebug'
