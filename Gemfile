@@ -17,6 +17,7 @@ gem 'turbolinks'
 gem 'twilio-ruby'
 gem 'figaro'
 gem 'geocoder'
+gem 'rest-client', '~> 1.8' 
 
 group :test do
   gem 'byebug'

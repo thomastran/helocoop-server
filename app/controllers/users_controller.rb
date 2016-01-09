@@ -83,6 +83,14 @@ class UsersController < ApplicationController
     render json: result, status: 200
   end
 
+  def making_request_to_gcm
+    token_registation = 'fDWWKhst2vQ:APA91bGYUldqj2zEcDF7zd7Wkk5bPPERTEi9wjU5z-P_maj1ATNKzDuplXOHO4q4HmvhljZRb5YTuMTWWbtWkG9sr2gLso74tQHY9t0KxNkZE1eVkUXzg4BTP01adh3U8B0FBCvu2cDw'
+    authorization = 'key=AIzaSyC6aXtvQBxqEueZ3MYN9EmSp3Kqv1JY-EM'
+    data = {:data => {:message => 'Novahub Studio Like You', :time => '123'}, :to => token_registation}.to_json
+    header = {:Authorization => authorization, :content_type => 'application/json'}
+    response = RestClient.post 'https://gcm-http.googleapis.com/gcm/send', data, header
+    render json: response
+  end
   private
 
   def send_sms(phone_number, activate_code)

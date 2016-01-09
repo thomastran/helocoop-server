@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   post 'users/update' => 'users#update'
   post 'users/clear' => 'users#clear_data_user'
   post 'users/verifycode' => 'users#verify_code'
+  post 'users/requestgcm' => 'users#making_request_to_gcm'
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
   #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
