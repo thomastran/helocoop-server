@@ -8,16 +8,16 @@ class UsersController < ApplicationController
       send_sms params[:phone_number], activate_code
       if User.exists?(:phone_number => params[:phone_number])
         user = User.find_by(phone_number: params[:phone_number])
-        user_temp = { "code" => activate_code }
+        user_temp = { :code => activate_code }
         user.update(user_temp)
-        result = { "success" => true, "message" => "updated new phone number successfully" }
+        result = { :success => true, :message => "updated new phone number successfully" }
       else
-        user_temp = { "phone_number" => params[:phone_number], "code" => activate_code }
+        user_temp = { :phone_number => params[:phone_number], :code => activate_code }
         @user = User.new(user_temp)
         if @user.save
-          result = { "success" => true, "message" => "created new phone number successfully" }
+          result = { :success => true, :message => "created new phone number successfully" }
         else
-          result = { "success" => false, "message" => "created new phone number unsuccessfully" }
+          result = { :success => false, :message => "created new phone number unsuccessfully" }
         end
       end
     end
@@ -32,19 +32,23 @@ class UsersController < ApplicationController
       email = params[:email]
       render json: update_user(phone_number, email, address, name)
     else
-      result = { "success" => false, "message" => "please check the paramaters" }
+      result = { :success => false, :message => "please check the paramaters" }
       render json: result
     end
   end
 
   def verify_code
-    if params.include?(:phone_number) and params.include?(:activate_code)
-      user = User.find_by(phone_number: params[:phone_number], code: params[:activate_code])
-      if user != nil
-        Rails.logger.info user.phone_number
-        Rails.logger.info user.code
-        success = true
-        message = "activate successfully"
+    if params.include?(:phone_number) and params.include?(:activate_code) and params.include?(:instance_id)
+      if User.exists?(:phone_number => params[:phone_number], :code => params[:activate_code])
+        user_temp = {:instance_id => params[:instance_id]}
+        user = User.find_by(:phone_number => params[:phone_number], :code => params[:activate_code])
+        if user.update(user_temp)
+          success = true
+          message = "activate successfully"
+        else
+          success = false
+          message = "cannot update instance id successfully"
+        end
       else
         success = false
         message = "phone number doesn't exist or code activate is not ok"
@@ -53,7 +57,7 @@ class UsersController < ApplicationController
       success = false
       message = "please check the paramaters"
     end
-    result = { "success" => success, "message" => message }
+    result = { :success => success, :message => message }
     render json: result, status: 200
   end
 
@@ -79,7 +83,7 @@ class UsersController < ApplicationController
     else
       success = false
     end
-    result = { "success" => success }
+    result = { :success => success }
     render json: result, status: 200
   end
 
@@ -117,7 +121,7 @@ class UsersController < ApplicationController
 
   def update_user(phone_number, email, address, name)
     token = generate_token
-    user_temp = { "email" => email, "address" => address, "name" => name, "token" => token }
+    user_temp = { :email => email, :address => address, :name => name, :token => token }
     user = User.find_by(phone_number: phone_number)
     if user.update(user_temp)
       success = true
