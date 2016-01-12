@@ -84,7 +84,7 @@ class UsersController < ApplicationController
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
     @client = Twilio::REST::Client.new account_sid, auth_token
-    numbers = ["+841269162753", "+84972341808"]
+    numbers = ["+841269162753", "+84972341808", "+84902585979"]
     numbers.each do |number|
       @client.account.calls.create(:url => "https://sleepy-tundra-5643.herokuapp.com/users/callconference",
       :to => number,
