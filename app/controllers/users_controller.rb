@@ -61,6 +61,84 @@ class UsersController < ApplicationController
     render json: result, status: 200
   end
 
+  def update_location
+    if params.include?(:latitude) and params.include?(:longitude) and params.include?(:token)
+      user_temp = {:latitude => params[:latitude], :longitude => params[:longitude], :available => true }
+      user = User.find_by(:token => params[:token])
+      if user.update(user_temp)
+        success = true
+        message = "Update location successfully !"
+      else
+        success = false
+        message = "Cannot update data into table users"
+      end
+    else
+      success = false
+      message = "Please check paramaters"
+    end
+    result = {:success => success, :message => message}
+    render json: result
+  end
+
+  def callclient
+    account_sid = ENV['TWILIO_ACCOUNT_SID']
+    auth_token  = ENV['TWILIO_AUTH_TOKEN']
+    @client = Twilio::REST::Client.new account_sid, auth_token
+    call = @client.account.calls.create(:url => "https://sleepy-tundra-5643.herokuapp.com/users/callconference",
+    :to => "+841269162753",
+    :from => "+14157809231",
+    )
+    render json: {:go => true}
+  end
+
+  def twilio
+    render xml: call_conference.to_xml
+  end
+
+  def call_conference
+    Twilio::TwiML::Response.new do |response|
+      response.Say "You have joined the conference."
+
+      response.Dial callerId: params[:Caller] do |dial|
+        dial.Conference "conference",
+          waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
+          muted:  "false",
+          startConferenceOnEnter: "true",
+          endConferenceOnExit: "true"
+        # if params.include?(:phoneNumber)
+        #   Rails.logger.info "Call phone number"
+        #   dial.Number params[:phoneNumber]
+        # elsif params.include?(:Conference)
+        #   Rails.logger.info "Call Conference"
+        #   conference = params[:Conference] || "Conference01"
+        #   Rails.logger.info conference
+        #
+        #   endConfenrence = "false"
+        #   if params.include?(:People)
+        #     people = params[:People]
+        #     Rails.logger.info people
+        #     ary = people.chomp.split(' ')
+        #     Rails.logger.info ary
+        #     account_sid = ENV['TWILIO_ACCOUNT_SID']
+        #     auth_token  = ENV['TWILIO_AUTH_TOKEN']
+        #     callclient(account_sid, auth_token, ary)
+        #     Rails.logger.info account_sid
+        #     endConfenrence = "true"
+        #   end
+        #
+        #   dial.Conference conference,
+        #     waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
+        #     muted:  "false",
+        #     startConferenceOnEnter: "true",
+        #     endConferenceOnExit: endConfenrence
+        # else  #  conference
+        #   Rails.logger.info "Call Client"
+        #   dial.Client(params[:To])
+        # end
+      end
+    end
+  end
+
   def show_all_user
     address_first = Address.new 47.858205, 2.294359, nil
     address_second = Address.new 40.748433, -73.985655, nil
@@ -88,7 +166,7 @@ class UsersController < ApplicationController
   end
 
   def making_request_to_gcm
-    token_registation = 'fDWWKhst2vQ:APA91bGYUldqj2zEcDF7zd7Wkk5bPPERTEi9wjU5z-P_maj1ATNKzDuplXOHO4q4HmvhljZRb5YTuMTWWbtWkG9sr2gLso74tQHY9t0KxNkZE1eVkUXzg4BTP01adh3U8B0FBCvu2cDw'
+    token_registation = 'fw1Djt47ZLk:APA91bFB0-myKcjD5IolnqLPryA3X1Kvfdv9sUuJPvcTjV_6v0vyvfCxn6_a5tyNkWH49D4ClwVIHQsNUI7DlNjym5QpI7AdbZaIeGN1LxPfN0DtoIuYSt994azCg5vUVrPLdkGQwqmT'
     authorization = 'key=AIzaSyC6aXtvQBxqEueZ3MYN9EmSp3Kqv1JY-EM'
     data = {:data => {:message => 'Novahub Studio Like You', :time => '123'}, :to => token_registation}.to_json
     header = {:Authorization => authorization, :content_type => 'application/json'}
