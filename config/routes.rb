@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   post 'users/updatelocation' => 'users#update_location'
   post 'users/callphonenumbers' => 'users#callclient'
 
-  get 'users/callconference' => 'users#twilio'
+  post 'users/callconference' => 'users#twilio'
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
   #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
