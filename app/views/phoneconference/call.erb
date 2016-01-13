@@ -1,0 +1,27 @@
+<div class="row">
+  <div class="col-md-2">
+  </div>
+  <div class="col-md-8">
+    <div class="alert alert-success" role="alert">Testing with three phonenumbers in conference room</div>
+    <%= form_for :phones do |f| %>
+      <div class="form-group">
+        <%= f.label :name, "The first phone number" %>
+        <%= f.text_field :first_number, class: "form-control" %>
+      </div>
+    <div class="form-group">
+        <%= f.label :phone_number, "The second phone number" %>
+        <%= f.text_field :second_number, class: "form-control" %>
+    </div>
+    <div class="form-group">
+        <%= f.label :description, "The third phone number" %>
+        <%= f.text_field :third_number, class: "form-control" %>
+    </div>
+    <div class="form-group">
+      <%= f.submit "Make a conference call ", class: "btn btn-primary btn-lg btn-block" %>
+    </div>
+    <% end %>
+  </div>
+  <div class="col-md-2">
+  </div>
+
+</div>

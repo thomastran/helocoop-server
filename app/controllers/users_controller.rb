@@ -108,36 +108,6 @@ class UsersController < ApplicationController
           muted:  "false",
           startConferenceOnEnter: "true",
           endConferenceOnExit: "true"
-        # if params.include?(:phoneNumber)
-        #   Rails.logger.info "Call phone number"
-        #   dial.Number params[:phoneNumber]
-        # elsif params.include?(:Conference)
-        #   Rails.logger.info "Call Conference"
-        #   conference = params[:Conference] || "Conference01"
-        #   Rails.logger.info conference
-        #
-        #   endConfenrence = "false"
-        #   if params.include?(:People)
-        #     people = params[:People]
-        #     Rails.logger.info people
-        #     ary = people.chomp.split(' ')
-        #     Rails.logger.info ary
-        #     account_sid = ENV['TWILIO_ACCOUNT_SID']
-        #     auth_token  = ENV['TWILIO_AUTH_TOKEN']
-        #     callclient(account_sid, auth_token, ary)
-        #     Rails.logger.info account_sid
-        #     endConfenrence = "true"
-        #   end
-        #
-        #   dial.Conference conference,
-        #     waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
-        #     muted:  "false",
-        #     startConferenceOnEnter: "true",
-        #     endConferenceOnExit: endConfenrence
-        # else  #  conference
-        #   Rails.logger.info "Call Client"
-        #   dial.Client(params[:To])
-        # end
       end
     end
   end
