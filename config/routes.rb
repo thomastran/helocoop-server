@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   get 'phoneconference' => 'phoneconference#index'
   post 'phoneconference' => 'phoneconference#index'
   post 'phoneconference/create' => 'phoneconference#create'
+  post 'users/turnoff' => 'users#turn_off_samaritan'
 
 
 

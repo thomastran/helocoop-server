@@ -17,11 +17,13 @@ class PhoneconferenceController < ApplicationController
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
     @client = Twilio::REST::Client.new account_sid, auth_token
-
+    url = 'https://sleepy-tundra-5643.herokuapp.com/users/callconference'
+    phone_number = '+14157809231'
     phones.each do |key, array|
-      @client.account.calls.create(:url => "https://sleepy-tundra-5643.herokuapp.com/users/callconference",
+      @client.account.calls.create(
+      :url => url,
       :to => array,
-      :from => "+14157809231"
+      :from => phone_number
       )
     end
   end

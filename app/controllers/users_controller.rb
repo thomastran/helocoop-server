@@ -80,6 +80,31 @@ class UsersController < ApplicationController
     render json: result
   end
 
+  def turn_off_samaritan
+    if params.include?(:token)
+      user_temp = {:available => false}
+      if User.exists?(:token => params[:token])
+        user = User.find_by(:token => params[:token])
+        if user.update user_temp
+          success = true
+          message = 'Turn off Samaritan successfully'
+        else
+          success = false
+          message = 'Cannot turn off Samaritan'
+        end
+      else
+        success = false
+        message = 'Token does not exist'
+      end
+
+    else
+      success = false
+      message = 'Please check your paramaters '
+    end
+    result = {:success => success, :message => message}
+    render json: result
+  end
+
   def callclient
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
@@ -139,9 +164,10 @@ class UsersController < ApplicationController
   end
 
   def making_request_to_gcm
-    token_registation = 'fw1Djt47ZLk:APA91bFB0-myKcjD5IolnqLPryA3X1Kvfdv9sUuJPvcTjV_6v0vyvfCxn6_a5tyNkWH49D4ClwVIHQsNUI7DlNjym5QpI7AdbZaIeGN1LxPfN0DtoIuYSt994azCg5vUVrPLdkGQwqmT'
-    authorization = 'key=AIzaSyC6aXtvQBxqEueZ3MYN9EmSp3Kqv1JY-EM'
-    data = {:data => {:message => 'Novahub Studio Like You', :time => '123'}, :to => token_registation}.to_json
+    token_registation = 'dyrIug-Vg3k:APA91bHiKm-LJnSugFoVgH8hpWoi4lRSD8F_sJ4M_QZKWjekL0dLTWEolvNSZ9h8wQ_qduivMpuGK9o79eJuP_g9V3cONs7N9KSSRO-kXOguBFoa0_UYuqSM9ziYGajYs6D3M3qcINL7'
+    authorization = 'key=AIzaSyBmj7ad8xxn2wPf7zD4bb02-wI4mI8keWg'
+    data = {"Ranking":0,"Id":"1b872f18-7a9c-4108-9866-3e6eda0166c9","CategoryId":"d2788594-03a8-4307-8253-dffdca3c7d11","Title":"Phát triển thương hiệu BIDV tại ngân hàng TMCP đầu tư và phát triển Việt Nam, chi nhánh Thái Nguyên","Description":"Ngày nay, ngân hàng được coi là một trong những ngành kinh tế huyết mạch mũi nhọn của bất kỳ nền kinh tế nào. Với những biến động và thăng trầm của nền kinh tế thế giới trong một vài năm trở lại đây đã khiến ngành ngân hàng toàn thế giới rơi vào cảnh khủng hoảng trầm trọng. Ở Việt Nam, với những khó khăn của nền kinh tế và chính sách tái cấu trúc hệ thống ngân hàng thương mại của chính phủ,...","Type":"pdf","Size":"1479864","DownloadCount":"7","ViewCount":"82","Thumnail":"http://www.khoaluan.vn/Thumnails/00000000-0000-0000-0000-000000000000/130/1b872f18-7a9c-4108-9866-3e6eda0166c9.png","DemoLink":"http://www.khoaluan.vn/Demo/00000000-0000-0000-0000-000000000000/Demo9/1b872f18-7a9c-4108-9866-3e6eda0166c9.pdf","CreatedDate":"2015-12-17T22:13:24.467","Address":null}
+    data = {:data => {:message => 'Novahub Studio Like You', :time => '123'}, :to => '/topics/global'}.to_json
     header = {:Authorization => authorization, :content_type => 'application/json'}
     response = RestClient.post 'https://gcm-http.googleapis.com/gcm/send', data, header
     render json: response
