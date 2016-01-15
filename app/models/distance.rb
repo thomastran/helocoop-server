@@ -1,8 +1,9 @@
 class Distance
 
-  def initialize(mile, token)
+  def initialize(mile, token, instance_id)
     @mile = mile
     @token = token
+    @instance_id = instance_id
   end
 
   def getMile
@@ -11,6 +12,10 @@ class Distance
 
   def getToken
     @token
-  end 
+  end
+
+  def getInstanceId
+    @instance_id
+  end
 
 end

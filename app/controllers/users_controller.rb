@@ -1,6 +1,59 @@
 class UsersController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
+  def create_data_test
+    phone_number = '+8412691627'
+    email = 'Samaritan@gmail.com'
+    50.times do |i|
+      phone_number_temp = phone_number + i.to_s
+      token_temp = generate_token
+      latitude_temp = random_location
+      longitude_temp = random_location
+      user_temp = {
+        :phone_number => phone_number_temp,
+        :email => email,
+        :token => token_temp,
+        :latitude => latitude_temp,
+        :longitude => longitude_temp,
+        :instance_id => token_temp,
+        :available => true
+      }
+      user = User.new(user_temp)
+      user.save
+    end
+    render json: {:ok => 'ok'}
+  end
+
+  def find_nearest_people(initial_address)
+    address_temp = Address.new 47.858205, 2.294359, nil, nil
+    addresses = []
+    distances = []
+    users = User.where("available = ?", true)
+    users.each { |user| addresses.push(Address.new user.latitude, user.longitude, user.token, user.instance_id)}
+    addresses.each { |address| distances.push(Distance.new(caculate_location(initial_address, address), address.getToken, address.getInstanceId))}
+    distances.sort! { |a,b| a.getMile <=> b.getMile }
+    return distances.take(2)
+  end
+  def find_people_to_call
+    if params.include?(:token)
+      if User.exists?(:token => params[:token])
+        user = User.find_by(token: params[:token])
+        initial_address = Address.new user.latitude, user.longitude, user.token, user.instance_id
+        distances = find_nearest_people initial_address
+        request_to_gcm distances
+        success = true
+        message = 'successfully'
+      else
+        success = false
+        message = 'token does not exist'
+      end
+    else
+      success = false
+      message = 'please check your paramaters'
+    end
+    result = {:success => success, :message => message}
+    render json: result
+  end
   def request_code
     activate_code = random_activate_code
     if params.include?(:phone_number)
@@ -166,13 +219,23 @@ class UsersController < ApplicationController
   def making_request_to_gcm
     token_registation = 'dyrIug-Vg3k:APA91bHiKm-LJnSugFoVgH8hpWoi4lRSD8F_sJ4M_QZKWjekL0dLTWEolvNSZ9h8wQ_qduivMpuGK9o79eJuP_g9V3cONs7N9KSSRO-kXOguBFoa0_UYuqSM9ziYGajYs6D3M3qcINL7'
     authorization = 'key=AIzaSyBmj7ad8xxn2wPf7zD4bb02-wI4mI8keWg'
-    data = {"Ranking":0,"Id":"1b872f18-7a9c-4108-9866-3e6eda0166c9","CategoryId":"d2788594-03a8-4307-8253-dffdca3c7d11","Title":"Phát triển thương hiệu BIDV tại ngân hàng TMCP đầu tư và phát triển Việt Nam, chi nhánh Thái Nguyên","Description":"Ngày nay, ngân hàng được coi là một trong những ngành kinh tế huyết mạch mũi nhọn của bất kỳ nền kinh tế nào. Với những biến động và thăng trầm của nền kinh tế thế giới trong một vài năm trở lại đây đã khiến ngành ngân hàng toàn thế giới rơi vào cảnh khủng hoảng trầm trọng. Ở Việt Nam, với những khó khăn của nền kinh tế và chính sách tái cấu trúc hệ thống ngân hàng thương mại của chính phủ,...","Type":"pdf","Size":"1479864","DownloadCount":"7","ViewCount":"82","Thumnail":"http://www.khoaluan.vn/Thumnails/00000000-0000-0000-0000-000000000000/130/1b872f18-7a9c-4108-9866-3e6eda0166c9.png","DemoLink":"http://www.khoaluan.vn/Demo/00000000-0000-0000-0000-000000000000/Demo9/1b872f18-7a9c-4108-9866-3e6eda0166c9.pdf","CreatedDate":"2015-12-17T22:13:24.467","Address":null}
     data = {:data => {:message => 'Novahub Studio Like You', :time => '123'}, :to => '/topics/global'}.to_json
     header = {:Authorization => authorization, :content_type => 'application/json'}
     response = RestClient.post 'https://gcm-http.googleapis.com/gcm/send', data, header
     render json: response
   end
   private
+
+  def request_to_gcm(distances)
+    distances.each {|distance| request_to_device distance.getInstanceId}
+  end
+
+  def request_to_device(instance_id)
+    authorization = 'key=AIzaSyBmj7ad8xxn2wPf7zD4bb02-wI4mI8keWg'
+    data = {:data => {:message => 'Novahub Studio Like You', :time => '123'}, :to => instance_id}.to_json
+    header = {:Authorization => authorization, :content_type => 'application/json'}
+    response = RestClient.post 'https://gcm-http.googleapis.com/gcm/send', data, header
+  end
 
   def send_sms(phone_number, activate_code)
 
@@ -217,6 +280,11 @@ class UsersController < ApplicationController
   def random_activate_code
     prng = Random.new
     prng.rand(1000..9999)
+  end
+
+  def random_location
+    prng = Random.new
+    prng.rand(0..9999)
   end
 
   def generate_token
