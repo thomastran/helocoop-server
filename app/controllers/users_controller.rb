@@ -194,9 +194,7 @@ class UsersController < ApplicationController
       @client.account.calls.create(:url => "https://sleepy-tundra-5643.herokuapp.com/users/callconference",
       :to => number,
       :from => "+14157809231",
-      :status_callback => "https://sleepy-tundra-5643.herokuapp.com/users/event",
-      :status_callback_method => "POST",
-      :status_callback_event => ["initiated", "ringing", "answered", "completed"]
+      :room => 'fuckyou'
       )
     end
     render json: {:go => true}
