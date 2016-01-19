@@ -115,7 +115,7 @@ class UsersController < ApplicationController
   def request_code
     activate_code = random_activate_code
     if params.include?(:phone_number)
-      activate_code = params[:phone_number] + activate_code.to_s
+      activate_code = activate_code.to_s
       send_sms params[:phone_number], activate_code
       if User.exists?(:phone_number => params[:phone_number])
         user = User.find_by(phone_number: params[:phone_number])
@@ -338,7 +338,7 @@ class UsersController < ApplicationController
 
   def random_activate_code
     prng = Random.new
-    prng.rand(1000..9999)
+    prng.rand(100000..999999)
   end
 
   def random_location
