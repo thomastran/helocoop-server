@@ -11,6 +11,19 @@ class CallController < ApplicationController
 
   private
 
+  def twilio
+    Twilio::TwiML::Response.new do |response|
+      response.Say "You have joined the conference."
+      response.Dial callerId: params[:Caller] do |dial|
+          dial.Conference "conference",
+            waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
+            muted:  "false",
+            startConferenceOnEnter: "true",
+            endConferenceOnExit: "true"
+      end
+    end
+  end
+
   def twilio_reponse
     Twilio::TwiML::Response.new do |response|
       response.Say "You have joined the conference."

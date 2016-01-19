@@ -32,7 +32,7 @@ class UsersController < ApplicationController
     users.each { |user| addresses.push(Address.new user.latitude, user.longitude, user.token, user.instance_id, user.phone_number)}
     addresses.each { |address| distances.push(Distance.new(caculate_location(initial_address, address), address.getToken, address.getInstanceId, address.getPhoneNumber))}
     distances.sort! { |a,b| a.getMile <=> b.getMile }
-    return distances[1..2]
+    return distances.take(3)
   end
 
   def test_location
@@ -74,11 +74,41 @@ class UsersController < ApplicationController
         user = User.find_by(token: params[:token])
         initial_address = Address.new user.latitude, user.longitude, user.token, user.instance_id, user.phone_number
         distances = find_nearest_people initial_address
+        call_client_to_join_conference distances
+        success = true
+        message = 'successfully'
       else
+        success = false
+        message = 'token does not exist '
+        distances = nil
       end
     else
+      success = false
+      message = 'please check your paramaters again'
+      distances = nil
     end
-    render json: distances
+    result = {:success => success, :message => message, :distances => distances}
+    render json: result
+  end
+
+  def call_client_to_join_conference(distances)
+    account_sid = ENV['TWILIO_ACCOUNT_SID']
+    auth_token  = ENV['TWILIO_AUTH_TOKEN']
+    @client = Twilio::REST::Client.new account_sid, auth_token
+    url = 'https://sleepy-tundra-5643.herokuapp.com/users/callconference'
+    phone_number = '+14157809231'
+    distances.each { |distance| @client.account.calls.create(
+    :url => url,
+    :to => distance.getPhoneNumber,
+    :from => phone_number
+    )}
+    # distances.each do |key, array|
+    #   @client.account.calls.create(
+    #   :url => url,
+    #   :to => array,
+    #   :from => phone_number
+    #   )
+    # end
   end
 
 
@@ -193,8 +223,7 @@ class UsersController < ApplicationController
     numbers.each do |number|
       @client.account.calls.create(:url => "https://sleepy-tundra-5643.herokuapp.com/users/callconference",
       :to => number,
-      :from => "+14157809231",
-      :room => 'fuckyou'
+      :from => "+14157809231"
       )
     end
     render json: {:go => true}
