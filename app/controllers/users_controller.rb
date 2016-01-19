@@ -25,12 +25,12 @@ class UsersController < ApplicationController
   end
 
   def find_nearest_people(initial_address)
-    address_temp = Address.new 47.858205, 2.294359, nil, nil, nil
+    address_temp = Address.new 47.858205, 2.294359, nil, nil, nil, nil, nil, nil
     addresses = []
     distances = []
     users = User.where("available = ?", true)
-    users.each { |user| addresses.push(Address.new user.latitude, user.longitude, user.token, user.instance_id, user.phone_number)}
-    addresses.each { |address| distances.push(Distance.new(caculate_location(initial_address, address), address.getToken, address.getInstanceId, address.getPhoneNumber))}
+    users.each { |user| addresses.push(Address.new user.latitude, user.longitude, user.token, user.instance_id, user.phone_number, user.name, user.description, user.address)}
+    addresses.each { |address| distances.push(Distance.new(caculate_location(initial_address, address), address.getToken, address.getInstanceId, address.getPhoneNumber, address.getName, address.getDescription, address.getAddress))}
     distances.sort! { |a,b| a.getMile <=> b.getMile }
     return distances.take(3)
   end
@@ -72,7 +72,7 @@ class UsersController < ApplicationController
     if params.include?(:token)
       if User.exists?(:token => params[:token])
         user = User.find_by(token: params[:token])
-        initial_address = Address.new user.latitude, user.longitude, user.token, user.instance_id, user.phone_number
+        initial_address = Address.new user.latitude, user.longitude, user.token, user.instance_id, user.phone_number, user.name, user.description, user.address
         distances = find_nearest_people initial_address
         call_client_to_join_conference distances
         success = true

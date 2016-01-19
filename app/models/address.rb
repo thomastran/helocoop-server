@@ -1,11 +1,14 @@
 class Address
 
-  def initialize(latitude, longitude, token, instance_id, phone_number)
+  def initialize(latitude, longitude, token, instance_id, phone_number, name, description, address)
     @latitude = latitude
     @longitude = longitude
     @token = token
     @instance_id = instance_id
     @phone_number = phone_number
+    @name = name
+    @description = description
+    @address = address
   end
 
   def getLatitude
@@ -26,5 +29,17 @@ class Address
 
   def getPhoneNumber
     @phone_number
+  end
+
+  def getDescription
+    @description
+  end
+
+  def getAddress
+    @address
+  end
+
+  def getName
+    @name
   end
 end
