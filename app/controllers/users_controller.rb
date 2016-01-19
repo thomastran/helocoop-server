@@ -136,12 +136,13 @@ class UsersController < ApplicationController
   end
 
   def update
-    if params.include?(:phone_number) and params.include?(:name) and params.include?(:address) and params.include?(:email)
+    if params.include?(:phone_number) and params.include?(:name) and params.include?(:address) and params.include?(:email) and params.include?(:description)
       phone_number = params[:phone_number]
       name = params[:name]
       address = params[:address]
       email = params[:email]
-      render json: update_user(phone_number, email, address, name)
+      description = params[:description]
+      render json: update_user(phone_number, email, address, name, description)
     else
       result = { :success => false, :message => "please check the paramaters" }
       render json: result
@@ -317,9 +318,9 @@ class UsersController < ApplicationController
     end
   end
 
-  def update_user(phone_number, email, address, name)
+  def update_user(phone_number, email, address, name, description)
     token = generate_token
-    user_temp = { :email => email, :address => address, :name => name, :token => token }
+    user_temp = { :email => email, :address => address, :name => name, :token => token, :description => description }
     user = User.find_by(phone_number: phone_number)
     if user.update(user_temp)
       success = true
