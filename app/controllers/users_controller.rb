@@ -2,10 +2,10 @@ class UsersController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
   def create_data_test
-    phone_number = '+8412691627'
+    phone_number = ['+841269162753', '+841204617647', '+849723441808', '+84986503988']
     email = 'Samaritan@gmail.com'
-    50.times do |i|
-      phone_number_temp = phone_number + i.to_s
+    4.times do |i|
+      phone_number_temp = phone_number.at(i)
       token_temp = generate_token
       latitude_temp = random_location
       longitude_temp = random_location
@@ -25,15 +25,27 @@ class UsersController < ApplicationController
   end
 
   def find_nearest_people(initial_address)
-    address_temp = Address.new 47.858205, 2.294359, nil, nil
+    address_temp = Address.new 47.858205, 2.294359, nil, nil, nil
     addresses = []
     distances = []
     users = User.where("available = ?", true)
-    users.each { |user| addresses.push(Address.new user.latitude, user.longitude, user.token, user.instance_id)}
-    addresses.each { |address| distances.push(Distance.new(caculate_location(initial_address, address), address.getToken, address.getInstanceId))}
+    users.each { |user| addresses.push(Address.new user.latitude, user.longitude, user.token, user.instance_id, user.phone_number)}
+    addresses.each { |address| distances.push(Distance.new(caculate_location(initial_address, address), address.getToken, address.getInstanceId, address.getPhoneNumber))}
     distances.sort! { |a,b| a.getMile <=> b.getMile }
-    return distances.take(2)
+    return distances[1..2]
   end
+
+  def test_location
+    address_temp = Address.new 47.858205, 2.294359, nil, nil, nil
+    addresses = []
+    distances = []
+    users = User.where("available = ?", true)
+    users.each { |user| addresses.push(Address.new user.latitude, user.longitude, user.token, user.instance_id, user.phone_number)}
+    addresses.each { |address| distances.push(Distance.new(caculate_location(address_temp, address), address.getToken, address.getInstanceId, address.getPhoneNumber))}
+    distances.sort! { |a,b| a.getMile <=> b.getMile }
+    render json: distances.take(2)
+  end
+
   def find_people_to_call
     if params.include?(:token)
       if User.exists?(:token => params[:token])
@@ -54,6 +66,22 @@ class UsersController < ApplicationController
     result = {:success => success, :message => message}
     render json: result
   end
+
+
+  def make_conference_call
+    if params.include?(:token)
+      if User.exists?(:token => params[:token])
+        user = User.find_by(token: params[:token])
+        initial_address = Address.new user.latitude, user.longitude, user.token, user.instance_id, user.phone_number
+        distances = find_nearest_people initial_address
+      else
+      end
+    else
+    end
+    render json: distances
+  end
+
+
   def request_code
     activate_code = random_activate_code
     if params.include?(:phone_number)
@@ -149,7 +177,6 @@ class UsersController < ApplicationController
         success = false
         message = 'Token does not exist'
       end
-
     else
       success = false
       message = 'Please check your paramaters '
@@ -166,7 +193,10 @@ class UsersController < ApplicationController
     numbers.each do |number|
       @client.account.calls.create(:url => "https://sleepy-tundra-5643.herokuapp.com/users/callconference",
       :to => number,
-      :from => "+14157809231"
+      :from => "+14157809231",
+      :status_callback => "https://sleepy-tundra-5643.herokuapp.com/users/event",
+      :status_callback_method => "POST",
+      :status_callback_event => ["initiated", "ringing", "answered", "completed"]
       )
     end
     render json: {:go => true}
@@ -174,6 +204,11 @@ class UsersController < ApplicationController
 
   def twilio
     render xml: call_conference.to_xml
+  end
+
+  def event
+      puts params.to_s
+      render json: params
   end
 
   def call_conference
@@ -238,18 +273,14 @@ class UsersController < ApplicationController
   end
 
   def send_sms(phone_number, activate_code)
-
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
-
     @client = Twilio::REST::Client.new account_sid, auth_token
-
     @client.account.messages.create({
       :from => '+14157809231',
       :to => phone_number,
       :body => activate_code
     })
-
   end
 
   def do_register

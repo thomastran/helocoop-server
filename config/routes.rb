@@ -26,6 +26,9 @@ Rails.application.routes.draw do
   post 'users/turnoff' => 'users#turn_off_samaritan'
   post 'users/createdatatest' => 'users#create_data_test'
   post 'users/findpeopletocall' => 'users#find_people_to_call'
+  post 'users/testlocation' => 'users#test_location'
+  post 'users/makeconferencecall' => 'users#make_conference_call'
+  post 'users/event' => 'users#event'
 
 
 
