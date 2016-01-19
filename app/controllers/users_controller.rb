@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
   def create_data_test
-    phone_number = ['+841269162753', '+841204617647', '+849723441808', '+84986503988']
+    phone_number = ['+841269162753', '+841204617647', '+84972341808', '+84986503988']
     email = 'Samaritan@gmail.com'
     4.times do |i|
       phone_number_temp = phone_number.at(i)
