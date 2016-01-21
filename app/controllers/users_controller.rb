@@ -134,11 +134,11 @@ class UsersController < ApplicationController
 
   # initializing a new room, calling to other phone number to join the room
   def make_conference_call
-    if params.include?(:token)
+    if params.include?(:token) and params.include?(:name_room)
       if User.exists?(:token => params[:token])
         user = User.find_by(token: params[:token])
         distances = find_nearest_people user
-        call_client_to_join_conference distances
+        call_client_to_join_conference distances, params[:token]
         success = true
         message = 'successfully'
       else
@@ -205,11 +205,11 @@ class UsersController < ApplicationController
     return distances.take(3)
   end
 
-  def call_client_to_join_conference(distances)
+  def call_client_to_join_conference(distances, name_room)
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
     @client = Twilio::REST::Client.new account_sid, auth_token
-    url = 'https://sleepy-tundra-5643.herokuapp.com/users/callconference?token=sam'
+    url = 'https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=' + name_room
     phone_number = '+14157809231'
     distances.each { |distance| @client.account.calls.create(
       :url => url,
@@ -222,7 +222,7 @@ class UsersController < ApplicationController
     Twilio::TwiML::Response.new do |response|
       response.Say "You have joined the conference."
       response.Dial callerId: params[:Caller] do |dial|
-        dial.Conference "conference",
+        dial.Conference params[:name_room],
           waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
           muted:  "false",
           startConferenceOnEnter: "true",
