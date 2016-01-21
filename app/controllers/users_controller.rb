@@ -138,7 +138,7 @@ class UsersController < ApplicationController
       if User.exists?(:token => params[:token])
         user = User.find_by(token: params[:token])
         distances = find_nearest_people user
-        call_client_to_join_conference distances, params[:token]
+        call_client_to_join_conference distances, params[:name_room]
         success = true
         message = 'successfully'
       else
