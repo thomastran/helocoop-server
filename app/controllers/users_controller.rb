@@ -26,22 +26,21 @@ class UsersController < ApplicationController
 
   # get phone number from android device and send sms to that phone number
   def request_code
-    activate_code = random_activate_code
+    activate_code = random_activate_code.to_s
     if params.include?(:phone_number)
-      activate_code = activate_code.to_s
       send_sms params[:phone_number], activate_code
       if User.exists?(:phone_number => params[:phone_number])
         user = User.find_by(phone_number: params[:phone_number])
-        user_temp = { :code => activate_code }
+        user_temp = {:code => activate_code}
         user.update(user_temp)
-        result = { :success => true, :message => "updated new phone number successfully" }
+        result = {:success => true, :message => 'updated new phone number successfully'}
       else
-        user_temp = { :phone_number => params[:phone_number], :code => activate_code }
+        user_temp = {:phone_number => params[:phone_number], :code => activate_code}
         @user = User.new(user_temp)
         if @user.save
-          result = { :success => true, :message => "created new phone number successfully" }
+          result = {:success => true, :message => 'created new phone number successfully'}
         else
-          result = { :success => false, :message => "created new phone number unsuccessfully" }
+          result = {:success => false, :message => 'created new phone number unsuccessfully'}
         end
       end
     end
@@ -56,18 +55,18 @@ class UsersController < ApplicationController
         user = User.find_by(:phone_number => params[:phone_number], :code => params[:activate_code])
         if user.update(user_temp)
           success = true
-          message = "activate successfully"
+          message = 'activate successfully'
         else
           success = false
-          message = "cannot update instance id successfully"
+          message = 'cannot update instance id successfully'
         end
       else
         success = false
-        message = "phone number doesn't exist or code activate is not ok"
+        message = 'phone number does not exist or code activate is not ok'
       end
     else
       success = false
-      message = "please check the paramaters"
+      message = 'please check the paramaters'
     end
     result = { :success => success, :message => message }
     render json: result, status: 200
@@ -83,7 +82,7 @@ class UsersController < ApplicationController
       description = params[:description]
       render json: update_user(phone_number, email, address, name, description)
     else
-      result = { :success => false, :message => "please check the paramaters" }
+      result = {:success => false, :message => 'please check the paramaters'}
       render json: result
     end
   end
@@ -120,14 +119,14 @@ class UsersController < ApplicationController
       user = User.find_by(:token => params[:token])
       if user.update(user_temp)
         success = true
-        message = "Update location successfully !"
+        message = 'Update location successfully !'
       else
         success = false
-        message = "Cannot update data into table users"
+        message = 'Cannot update data into table users'
       end
     else
       success = false
-      message = "Please check paramaters"
+      message = 'Please check paramaters'
     end
     result = {:success => success, :message => message}
     render json: result
@@ -160,7 +159,9 @@ class UsersController < ApplicationController
     render xml: call_conference.to_xml
   end
 
-
+  def learn_ruby
+    render json: {:ok => 'fuck'}
+  end
   private
 
   def send_sms(phone_number, activate_code)
@@ -180,11 +181,11 @@ class UsersController < ApplicationController
     user = User.find_by(phone_number: phone_number)
     if user.update(user_temp)
       success = true
-      message = "updated successfully"
+      message = 'updated successfully'
       token_response = token
     else
       success = false
-      message = "updated unsuccessfully"
+      message = 'updated unsuccessfully'
       token_response = nil
     end
     result = Info_Response.new(success, message, token_response)
@@ -208,7 +209,7 @@ class UsersController < ApplicationController
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
     @client = Twilio::REST::Client.new account_sid, auth_token
-    url = 'https://sleepy-tundra-5643.herokuapp.com/users/callconference'
+    url = 'https://sleepy-tundra-5643.herokuapp.com/users/callconference?token=sam'
     phone_number = '+14157809231'
     distances.each { |distance| @client.account.calls.create(
       :url => url,
