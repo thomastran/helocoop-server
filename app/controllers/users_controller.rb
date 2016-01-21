@@ -156,7 +156,7 @@ class UsersController < ApplicationController
   end
 
   def twilio
-    render xml: call_conference.to_xml
+    render xml: call_conference(params[:name_room]).to_xml
   end
 
   def learn_ruby
@@ -219,11 +219,11 @@ class UsersController < ApplicationController
     )}
   end
 
-  def call_conference
+  def call_conference(name_room)
     Twilio::TwiML::Response.new do |response|
       response.Say "You have joined the conference."
       response.Dial callerId: params[:Caller] do |dial|
-        dial.Conference params[:name_room],
+        dial.Conference name_room,
           waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
           muted:  "false",
           startConferenceOnEnter: "true",
