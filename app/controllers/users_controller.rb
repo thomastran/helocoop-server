@@ -1,6 +1,10 @@
 class UsersController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
+  def test_ruby
+    render json: {:go => true}
+  end
+
   def create_data_test
     phone_number = ['+841269162753', '+841204617647', '+84972341808', '+84986503988']
     email = 'Samaritan@gmail.com'
@@ -24,13 +28,14 @@ class UsersController < ApplicationController
     render json: {:ok => 'ok'}
   end
 
-  def find_nearest_people(initial_address)
-    address_temp = Address.new 47.858205, 2.294359, nil, nil, nil, nil, nil, nil
-    addresses = []
+  def find_nearest_people(user_initial)
     distances = []
     users = User.where("available = ?", true)
-    users.each { |user| addresses.push(Address.new user.latitude, user.longitude, user.token, user.instance_id, user.phone_number, user.name, user.description, user.address)}
-    addresses.each { |address| distances.push(Distance.new(caculate_location(initial_address, address), address.getToken, address.getInstanceId, address.getPhoneNumber, address.getName, address.getDescription, address.getAddress))}
+    users.each do |user|
+      if caculate_location_temp(user_initial, user) < 10
+        distances.push(Distance.new(caculate_location_temp(user_initial, user), user.phone_number, user.name, user.description, user.address))
+      end
+    end
     distances.sort! { |a,b| a.getMile <=> b.getMile }
     return distances.take(3)
   end
@@ -73,8 +78,8 @@ class UsersController < ApplicationController
       if User.exists?(:token => params[:token])
         user = User.find_by(token: params[:token])
         initial_address = Address.new user.latitude, user.longitude, user.token, user.instance_id, user.phone_number, user.name, user.description, user.address
-        distances = find_nearest_people initial_address
-        call_client_to_join_conference distances
+        distances = find_nearest_people user
+        # call_client_to_join_conference distances
         success = true
         message = 'successfully'
       else
@@ -98,9 +103,9 @@ class UsersController < ApplicationController
     url = 'https://sleepy-tundra-5643.herokuapp.com/users/callconference'
     phone_number = '+14157809231'
     distances.each { |distance| @client.account.calls.create(
-    :url => url,
-    :to => distance.getPhoneNumber,
-    :from => phone_number
+      :url => url,
+      :to => distance.getPhoneNumber,
+      :from => phone_number
     )}
     # distances.each do |key, array|
     #   @client.account.calls.create(
@@ -359,6 +364,9 @@ class UsersController < ApplicationController
       Geocoder::Calculations.distance_between([address_first.getLatitude, address_first.getLongitude], [address_second.getLatitude, address_second.getLongitude])
   end
 
+  def caculate_location_temp(user_first, user_second)
+    Geocoder::Calculations.distance_between([user_first.latitude, user_first.longitude], [user_second.latitude, user_second.longitude])
+  end
   def sort_by_distance(arr_of_address, initial_address)
     arr_of_distance = []
     arr_of_address.each { |address| arr_of_distance.push(Distance.new(caculate_location(address, initial_address), address.getToken)) }
