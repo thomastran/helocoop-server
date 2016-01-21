@@ -197,10 +197,9 @@ class UsersController < ApplicationController
     users = User.where("available = ?", true)
     users.each do |user|
       distance = caculate_location(user_initial, user)
-      distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
-      # if distance < 10
-      #   distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
-      # end
+      if distance < 10
+        distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
+      end
     end
     distances.sort! { |a,b| a.getMile <=> b.getMile }
     return distances.take(3)
