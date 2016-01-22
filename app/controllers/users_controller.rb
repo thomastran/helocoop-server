@@ -229,7 +229,7 @@ class UsersController < ApplicationController
       :to => distances.first.getPhoneNumber,
       :from => phone_number
     )
-    distances.delete_at(0)
+    # distances.delete_at(0)
     calling = false
     url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&calling=#{ calling }"
     distances.each do |distance|
