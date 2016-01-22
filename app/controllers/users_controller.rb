@@ -158,7 +158,7 @@ class UsersController < ApplicationController
   end
 
   def twilio
-    render xml: call_conference(params[:name_room]).to_xml
+    render xml: call_conference(params[:name_room], params[:participants]).to_xml
   end
 
   def learn_ruby
@@ -215,7 +215,7 @@ class UsersController < ApplicationController
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
     @client = Twilio::REST::Client.new account_sid, auth_token
-    url = 'https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=' + name_room
+    url = 'https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=' + name_room + '&participants=' + distances.length
     phone_number = '+14157809231'
     distances.each { |distance| @client.account.calls.create(
       :url => url,
@@ -224,9 +224,16 @@ class UsersController < ApplicationController
     )}
   end
 
-  def call_conference(name_room)
+  def call_conference(name_room, participants)
+    if participants == 1
+      message = 'We have found 1 person ready to help you '
+    elsif
+      message = 'We have found 2 people ready to help you '
+    else
+      message = 'You have joined the conference.'
+    end
     Twilio::TwiML::Response.new do |response|
-      response.Say "You have joined the conference."
+      response.Say message,
       response.Dial callerId: params[:Caller] do |dial|
         dial.Conference name_room,
           waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
