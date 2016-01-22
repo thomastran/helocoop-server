@@ -162,6 +162,9 @@ class UsersController < ApplicationController
   end
 
   def learn_ruby
+    distance = Distance.new 10, 'sam', 'sam', 'sam', 'ppppp'
+    puts distance.mile
+    puts distance.name
     render json: {:ok => 'fuck'}
   end
   private
@@ -169,11 +172,12 @@ class UsersController < ApplicationController
   def send_sms(phone_number, activate_code)
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
+    message = 'Your HelpCoop activation number is '+ activate_code +'. Please enter this number in the HelpCoop app to activate.'
     @client = Twilio::REST::Client.new account_sid, auth_token
     @client.account.messages.create({
       :from => '+14157809231',
       :to => phone_number,
-      :body => activate_code
+      :body => message
     })
   end
 

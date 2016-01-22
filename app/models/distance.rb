@@ -1,5 +1,5 @@
 class Distance
-
+  attr_accessor :mile, :phone_number, :name, :description, :address
   def initialize(mile, phone_number, name, description, address)
     @mile = mile
     @phone_number = phone_number
