@@ -203,13 +203,12 @@ class UsersController < ApplicationController
     users = User.where("available = ?", true)
     users.each do |user|
       distance = caculate_location(user_initial, user)
-      distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
-      # if distance < 10
-      #   distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
-      # end
+      if distance < 10
+        distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
+      end
     end
     distances.sort! { |a,b| a.getMile <=> b.getMile }
-    return distances.take(2)
+    return distances.take(3)
   end
 
   def call_client_to_join_conference(distances, name_room)
@@ -270,7 +269,7 @@ class UsersController < ApplicationController
 
   def random_location
     prng = Random.new
-    prng.rand(10..100)
+    prng.rand(10..10)
   end
 
   def request_to_device(instance_id)
