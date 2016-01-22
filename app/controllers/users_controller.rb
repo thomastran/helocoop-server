@@ -203,10 +203,10 @@ class UsersController < ApplicationController
     users = User.where("available = ?", true)
     users.each do |user|
       distance = caculate_location(user_initial, user)
-      distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
-      # if distance < 10
-      #   distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
-      # end
+      # distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
+      if distance < 10
+        distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
+      end
     end
     distances.sort! { |a,b| a.getMile <=> b.getMile }
     return distances.take(3)
@@ -228,7 +228,7 @@ class UsersController < ApplicationController
       :url => url,
       :to => distances.first.getPhoneNumber,
       :from => phone_number
-    )}
+    )
     distances.delete_at(0)
     calling = false
     url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&calling=#{ calling }"
@@ -251,8 +251,9 @@ class UsersController < ApplicationController
         message = 'You have joined the conference.'
       end
     else
-      message = 'Someone need your help, You have joined the conference'
+      message = 'Someone need your help, You have joined the conference.'
     end
+
     Twilio::TwiML::Response.new do |response|
       response.Say message
       response.Dial callerId: params[:Caller] do |dial|
