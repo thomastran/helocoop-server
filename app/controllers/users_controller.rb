@@ -269,7 +269,7 @@ class UsersController < ApplicationController
 
   def random_location
     prng = Random.new
-    prng.rand(0..9999)
+    prng.rand(10..100)
   end
 
   def request_to_device(instance_id)
