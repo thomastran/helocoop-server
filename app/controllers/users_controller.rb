@@ -234,7 +234,7 @@ class UsersController < ApplicationController
       message = 'You have joined the conference.'
     end
     Twilio::TwiML::Response.new do |response|
-      response.Say message,
+      response.Say message
       response.Dial callerId: params[:Caller] do |dial|
         dial.Conference name_room,
           waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
