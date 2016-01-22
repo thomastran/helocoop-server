@@ -228,7 +228,7 @@ class UsersController < ApplicationController
   def call_conference(name_room, participants)
     if participants == 1
       message = 'We have found 1 person ready to help you '
-    elsif
+    elsif participants == 2
       message = 'We have found 2 people ready to help you '
     else
       message = 'You have joined the conference.'
