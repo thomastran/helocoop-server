@@ -209,7 +209,7 @@ class UsersController < ApplicationController
       # end
     end
     distances.sort! { |a,b| a.getMile <=> b.getMile }
-    return distances.take(3)
+    return distances.take(2)
   end
 
   def call_client_to_join_conference(distances, name_room)
