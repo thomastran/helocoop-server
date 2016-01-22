@@ -242,7 +242,7 @@ class UsersController < ApplicationController
   end
 
   def call_conference(name_room, participants, calling)
-    if calling
+    if calling.eql?("true")
       if participants.eql?("2")
         message = 'We have found 1 person ready to help you '
       elsif participants.eql?("3")
