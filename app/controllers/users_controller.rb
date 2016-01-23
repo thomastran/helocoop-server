@@ -140,7 +140,7 @@ class UsersController < ApplicationController
         user = User.find_by(token: params[:token])
         distances = find_nearest_people user
         if distances.length >= 2
-          # call_client_to_join_conference distances, params[:name_room]
+          call_client_to_join_conference distances, params[:name_room]
         end
         success = true
         message = 'successfully'
