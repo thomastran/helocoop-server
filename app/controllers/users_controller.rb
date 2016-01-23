@@ -234,6 +234,7 @@ class UsersController < ApplicationController
     calling = false
     url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&calling=#{ calling }"
     distances.each do |distance|
+      puts distance.to_s
       @client.account.calls.create(
         :url => url,
         :to => distance.getPhoneNumber,
