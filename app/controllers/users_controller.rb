@@ -2,15 +2,16 @@ class UsersController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
   def create_data_test
-    phone_number = ['+841269162753', '+841204617647', '+84972341808', '+84986503988']
+    # phone_number = ['+841269162753', '+841204617647', '+84972341808', '+84986503988']
+    phone_numbers = ['+841626180314', '+841635829084']
     email = 'Samaritan@gmail.com'
-    4.times do |i|
-      phone_number_temp = phone_number.at(i)
+    phone_numbers.each do |phone_number|
+      # phone_number_temp = phone_number.at(i)
       token_temp = generate_token
       latitude_temp = random_location
       longitude_temp = random_location
       user_temp = {
-        :phone_number => phone_number_temp,
+        :phone_number => phone_number,
         :email => email,
         :token => token_temp,
         :latitude => latitude_temp,
@@ -139,7 +140,7 @@ class UsersController < ApplicationController
         user = User.find_by(token: params[:token])
         distances = find_nearest_people user
         if distances.length >= 2
-          call_client_to_join_conference distances, params[:name_room]
+          # call_client_to_join_conference distances, params[:name_room]
         end
         success = true
         message = 'successfully'
@@ -264,6 +265,21 @@ class UsersController < ApplicationController
           endConferenceOnExit: "true"
       end
     end
+  end
+
+  def say_message(is_from_caller, participants)
+    if is_from_caller.eql?(true)
+      if participants.eql?(2)
+        message = 'We have found 1 person ready to help you '
+      elsif participants >= 3
+        message = "We have found #{ participants - 1 } people ready to help you "
+      else
+        message = 'You have joined the conference.'
+      end
+    else
+      message = 'Someone need your help, You have joined the conference.'
+    end
+    return message
   end
 
   def random_activate_code
