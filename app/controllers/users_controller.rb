@@ -138,7 +138,7 @@ class UsersController < ApplicationController
         user = User.find_by(token: params[:token])
         distances = find_nearest_people user
         if distances.length >= 2
-          call_client_to_join_conference distances, params[:name_room]
+          call_client_to_join_conference distances, params[:name_room], user.name
         end
         success = true
         message = 'successfully'
@@ -157,7 +157,7 @@ class UsersController < ApplicationController
   end
 
   def twilio
-    render xml: call_conference(params[:name_room], params[:participants], params[:calling]).to_xml
+    render xml: call_conference(params[:name_room], params[:participants], params[:is_from_caller], params[:name_of_caller]).to_xml
   end
 
   def learn_ruby
@@ -212,48 +212,28 @@ class UsersController < ApplicationController
     return distances.take(3)
   end
 
-  def call_client_to_join_conference(distances, name_room)
+  def call_client_to_join_conference(distances, name_room, name_of_caller)
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
-    calling = true
     @client = Twilio::REST::Client.new account_sid, auth_token
-    # url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&calling=#{ calling }"
     phone_number = '+14157809231'
-
     distances.each_with_index do |distance, index|
       if index.eql?(0)
         is_from_caller = true
       else
         is_from_caller = false
       end
-      url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&calling=#{ is_from_caller }"
+      url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ name_of_caller }"
       @client.account.calls.create(
         :url => url,
         :to => distance.phone_number,
         :from => phone_number
       )
     end
-
-    # @client.account.calls.create(
-    #   :url => url,
-    #   :to => distances.first.getPhoneNumber,
-    #   :from => phone_number
-    # )
-    # distances.delete_at(0)
-    # calling = false
-    # url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&calling=#{ calling }"
-    # distances.each do |distance|
-    #   puts distance.to_s
-    #   @client.account.calls.create(
-    #     :url => url,
-    #     :to => distance.getPhoneNumber,
-    #     :from => phone_number
-    #   )
-    # end
   end
 
-  def call_conference(name_room, participants, calling)
-    message = say_message calling, participants
+  def call_conference(name_room, participants, calling, name_of_caller)
+    message = say_message calling, participants, name_of_caller
     Twilio::TwiML::Response.new do |response|
       response.Say message
       response.Dial callerId: params[:Caller] do |dial|
@@ -266,7 +246,7 @@ class UsersController < ApplicationController
     end
   end
 
-  def say_message(is_from_caller, participants)
+  def say_message(is_from_caller, participants, name_of_caller)
     participants_temp = participants.to_i
     if is_from_caller.eql?("true")
       if participants_temp.eql?(2)
@@ -277,7 +257,7 @@ class UsersController < ApplicationController
         message = 'You have joined the conference.'
       end
     else
-      message = 'Someone need your help, You have joined the conference.'
+      message = "#{name_of_caller} need your help, You have joined the conference."
     end
     return message
   end
