@@ -161,9 +161,10 @@ class UsersController < ApplicationController
   end
 
   def learn_ruby
-    distance = Distance.new 10, 'sam', 'sam', 'sam', 'ppppp'
-    puts distance.mile
-    puts distance.name
+    phone_numbers = ['+841626180314', '+841635829084']
+    phone_numbers.each_with_index do |phone_number, index|
+      puts index
+    end
     render json: {:ok => 'fuck'}
   end
   private
@@ -216,24 +217,39 @@ class UsersController < ApplicationController
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
     calling = true
     @client = Twilio::REST::Client.new account_sid, auth_token
-    url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&calling=#{ calling }"
+    # url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&calling=#{ calling }"
     phone_number = '+14157809231'
-    @client.account.calls.create(
-      :url => url,
-      :to => distances.first.getPhoneNumber,
-      :from => phone_number
-    )
-    distances.delete_at(0)
-    calling = false
-    url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&calling=#{ calling }"
-    distances.each do |distance|
-      puts distance.to_s
+
+    distances.each_with_index do |distance, index|
+      if index.eql?(0)
+        is_from_caller = true
+      else
+        is_from_caller = false
+      end
+      url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&calling=#{ is_from_caller }"
       @client.account.calls.create(
         :url => url,
-        :to => distance.getPhoneNumber,
+        :to => distance.phone_number,
         :from => phone_number
       )
     end
+
+    # @client.account.calls.create(
+    #   :url => url,
+    #   :to => distances.first.getPhoneNumber,
+    #   :from => phone_number
+    # )
+    # distances.delete_at(0)
+    # calling = false
+    # url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&calling=#{ calling }"
+    # distances.each do |distance|
+    #   puts distance.to_s
+    #   @client.account.calls.create(
+    #     :url => url,
+    #     :to => distance.getPhoneNumber,
+    #     :from => phone_number
+    #   )
+    # end
   end
 
   def call_conference(name_room, participants, calling)
