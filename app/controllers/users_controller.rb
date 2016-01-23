@@ -244,17 +244,18 @@ class UsersController < ApplicationController
   end
 
   def call_conference(name_room, participants, calling)
-    if calling.eql?("true")
-      if participants.eql?("2")
-        message = 'We have found 1 person ready to help you '
-      elsif participants.eql?("3")
-        message = 'We have found 2 people ready to help you '
-      else
-        message = 'You have joined the conference.'
-      end
-    else
-      message = 'Someone need your help, You have joined the conference.'
-    end
+    # if calling.eql?("true")
+    #   if participants.eql?("2")
+    #     message = 'We have found 1 person ready to help you '
+    #   elsif participants.eql?("3")
+    #     message = 'We have found 2 people ready to help you '
+    #   else
+    #     message = 'You have joined the conference.'
+    #   end
+    # else
+    #   message = 'Someone need your help, You have joined the conference.'
+    # end
+    message = say_message calling, participants
 
     Twilio::TwiML::Response.new do |response|
       response.Say message
@@ -269,11 +270,12 @@ class UsersController < ApplicationController
   end
 
   def say_message(is_from_caller, participants)
-    if is_from_caller.eql?(true)
-      if participants.eql?(2)
+    participants_temp = participants.to_i
+    if is_from_caller.eql?("true")
+      if participants_temp.eql?(2)
         message = 'We have found 1 person ready to help you '
-      elsif participants >= 3
-        message = "We have found #{ participants - 1 } people ready to help you "
+      elsif participants_temp >= 3
+        message = "We have found #{ participants_temp - 1 } people ready to help you "
       else
         message = 'You have joined the conference.'
       end
