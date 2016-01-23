@@ -2,11 +2,9 @@ class UsersController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
   def create_data_test
-    # phone_number = ['+841269162753', '+841204617647', '+84972341808', '+84986503988']
     phone_numbers = ['+841626180314', '+841635829084']
     email = 'Samaritan@gmail.com'
     phone_numbers.each do |phone_number|
-      # phone_number_temp = phone_number.at(i)
       token_temp = generate_token
       latitude_temp = random_location
       longitude_temp = random_location
@@ -220,11 +218,6 @@ class UsersController < ApplicationController
     @client = Twilio::REST::Client.new account_sid, auth_token
     url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&calling=#{ calling }"
     phone_number = '+14157809231'
-    # distances.each { |distance| @client.account.calls.create(
-    #   :url => url,
-    #   :to => distance.getPhoneNumber,
-    #   :from => phone_number
-    # )}
     @client.account.calls.create(
       :url => url,
       :to => distances.first.getPhoneNumber,
@@ -244,19 +237,7 @@ class UsersController < ApplicationController
   end
 
   def call_conference(name_room, participants, calling)
-    # if calling.eql?("true")
-    #   if participants.eql?("2")
-    #     message = 'We have found 1 person ready to help you '
-    #   elsif participants.eql?("3")
-    #     message = 'We have found 2 people ready to help you '
-    #   else
-    #     message = 'You have joined the conference.'
-    #   end
-    # else
-    #   message = 'Someone need your help, You have joined the conference.'
-    # end
     message = say_message calling, participants
-
     Twilio::TwiML::Response.new do |response|
       response.Say message
       response.Dial callerId: params[:Caller] do |dial|
