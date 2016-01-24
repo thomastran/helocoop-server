@@ -161,11 +161,13 @@ class UsersController < ApplicationController
   end
 
   def learn_ruby
-    phone_numbers = ['+841626180314', '+841635829084']
-    phone_numbers.each_with_index do |phone_number, index|
-      puts index
+    users_temp = []
+    User.all.each do |user|
+      if user.available && !user.phone_number.eql?("+841269162753")
+        users_temp.push user
+      end
     end
-    render json: {:ok => 'fuck'}
+    render json: {:ok => users_temp}
   end
   private
 
@@ -200,6 +202,12 @@ class UsersController < ApplicationController
 
   def find_nearest_people(user_initial)
     distances = []
+    users_temp = []
+    User.all.each do |user|
+      if user.available && !user.phone_number.eql?("+841269162753")
+        users_temp.push user
+      end
+    end
     users = User.where("available = ?", true)
     users.each do |user|
       distance = caculate_location(user_initial, user)
