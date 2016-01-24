@@ -136,9 +136,9 @@ class UsersController < ApplicationController
     if params.include?(:token) and params.include?(:name_room)
       if User.exists?(:token => params[:token])
         user = User.find_by(token: params[:token])
-        distances = find_nearest_people user
-        if distances.length >= 2
-          call_client_to_join_conference distances, params[:name_room], user.name
+        distances = find_nearest_people user, 2
+        if distances.length >= 1
+          call_client_to_join_conference distances, params[:name_room], user
         end
         success = true
         message = 'successfully'
@@ -200,15 +200,15 @@ class UsersController < ApplicationController
     return result
   end
 
-  def find_nearest_people(user_initial)
+  def find_nearest_people(user_initial, people_limit)
     distances = []
-    users_temp = []
+    users = []
     User.all.each do |user|
-      if user.available && !user.phone_number.eql?("+841269162753")
-        users_temp.push user
+      if user.available && !user.token.eql?(user_initial.token)
+        users.push user
       end
     end
-    users = User.where("available = ?", true)
+    # users = User.where("available = ?", true)
     users.each do |user|
       distance = caculate_location(user_initial, user)
       distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
@@ -217,21 +217,26 @@ class UsersController < ApplicationController
       # end
     end
     distances.sort! { |a,b| a.getMile <=> b.getMile }
-    return distances.take(3)
+    return distances.take(people_limit)
   end
 
-  def call_client_to_join_conference(distances, name_room, name_of_caller)
+  def call_client_to_join_conference(distances, name_room, initilial_user)
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
     @client = Twilio::REST::Client.new account_sid, auth_token
     phone_number = '+14157809231'
-    distances.each_with_index do |distance, index|
-      if index.eql?(0)
-        is_from_caller = true
-      else
-        is_from_caller = false
-      end
-      url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ name_of_caller }"
+    is_from_caller = true
+    url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ initilial_user.name }"
+    # Call to initilial_user first
+    @client.account.calls.create(
+      :url => url,
+      :to => initilial_user.phone_number,
+      :from => phone_number
+    )
+    # Call to the remaining users
+    is_from_caller = false
+    url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ initilial_user.name }"
+    distances.each do |distance|
       @client.account.calls.create(
         :url => url,
         :to => distance.phone_number,
