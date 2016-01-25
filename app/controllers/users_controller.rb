@@ -111,10 +111,34 @@ class UsersController < ApplicationController
     render json: result
   end
 
+  def turn_on_samaritan
+    if params.include?(:token)
+      user_update = {:available => true}
+      if User.exists?(:token => params[:token])
+        user = User.find_by(:token => params[:token])
+        if user.update user_update
+          success = true
+          message = 'Update available successfully !'
+        else
+          success = false
+          message = 'Cannot update data to the users table'
+        end
+      else
+        success = false
+        message = 'Token does not exist'
+      end
+    else
+      success = false
+      message = 'Please check paramaters'
+    end
+    result = {:success => success, :message => message}
+    render json: result
+  end
+
   # Update location and turn on Samaritan status to true
   def update_location
     if params.include?(:latitude) and params.include?(:longitude) and params.include?(:token)
-      user_temp = {:latitude => params[:latitude], :longitude => params[:longitude], :available => true }
+      user_temp = {:latitude => params[:latitude], :longitude => params[:longitude]}
       user = User.find_by(:token => params[:token])
       if user.update(user_temp)
         success = true
