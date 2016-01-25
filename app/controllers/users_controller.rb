@@ -234,15 +234,15 @@ class UsersController < ApplicationController
       :from => phone_number
     )
     # Call to the remaining users
-    is_from_caller = false
-    url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ initilial_user.name }"
-    distances.each do |distance|
-      @client.account.calls.create(
-        :url => url,
-        :to => distance.phone_number,
-        :from => phone_number
-      )
-    end
+    # is_from_caller = false
+    # url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ initilial_user.name }"
+    # distances.each do |distance|
+    #   @client.account.calls.create(
+    #     :url => url,
+    #     :to => distance.phone_number,
+    #     :from => phone_number
+    #   )
+    # end
   end
 
   def call_conference(name_room, participants, calling, name_of_caller)
@@ -262,10 +262,10 @@ class UsersController < ApplicationController
   def say_message(is_from_caller, participants, name_of_caller)
     participants_temp = participants.to_i
     if is_from_caller.eql?("true")
-      if participants_temp.eql?(2)
+      if participants_temp.eql?(1)
         message = 'We have found 1 person ready to help you '
-      elsif participants_temp >= 3
-        message = "We have found #{ participants_temp - 1 } people ready to help you "
+      elsif participants_temp >= 2
+        message = "We have found #{ participants_temp } people ready to help you "
       else
         message = 'You have joined the conference.'
       end
