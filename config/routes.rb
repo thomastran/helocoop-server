@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   post 'users/findpeopletocall' => 'users#find_people_to_call'
   post 'users/makeconferencecall' => 'users#make_conference_call'
   post 'users/learn' => 'users#learn_ruby'
+  post 'users/updatelocationservice' => 'users#update_location_service'
 
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
