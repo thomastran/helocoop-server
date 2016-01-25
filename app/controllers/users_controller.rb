@@ -278,15 +278,15 @@ class UsersController < ApplicationController
       :from => phone_number
     )
     # Call to the remaining users
-    # is_from_caller = false
-    # url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ initilial_user.name }"
-    # distances.each do |distance|
-    #   @client.account.calls.create(
-    #     :url => url,
-    #     :to => distance.phone_number,
-    #     :from => phone_number
-    #   )
-    # end
+    is_from_caller = false
+    url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ initilial_user.name }"
+    distances.each do |distance|
+      @client.account.calls.create(
+        :url => url,
+        :to => distance.phone_number,
+        :from => phone_number
+      )
+    end
   end
 
   def call_conference(name_room, participants, calling, name_of_caller)
