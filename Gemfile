@@ -17,8 +17,8 @@ gem 'turbolinks'
 gem 'twilio-ruby'
 gem 'figaro'
 gem 'geocoder'
-gem 'rest-client', '~> 1.8' 
-
+gem 'rest-client', '~> 1.8'
+gem 'activeadmin', github: 'activeadmin'
 group :test do
   gem 'byebug'
   gem 'rspec-rails'
