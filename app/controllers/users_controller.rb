@@ -27,8 +27,8 @@ class UsersController < ApplicationController
   def request_code
     activate_code = random_activate_code.to_s
     if params.include?(:phone_number)
-      send_sms params[:phone_number], activate_code
       if User.exists?(:phone_number => params[:phone_number])
+        send_sms params[:phone_number], activate_code
         user = User.find_by(phone_number: params[:phone_number])
         user_temp = {:code => activate_code}
         user.update(user_temp)
@@ -110,7 +110,7 @@ class UsersController < ApplicationController
     result = {:success => success, :message => message}
     render json: result
   end
-
+  # turn on samaritan
   def turn_on_samaritan
     if params.include?(:token)
       user_update = {:available => true}
@@ -204,6 +204,7 @@ class UsersController < ApplicationController
     render xml: call_conference(params[:name_room], params[:participants], params[:is_from_caller], params[:name_of_caller]).to_xml
   end
 
+  # Just testing result here
   def learn_ruby
     users_temp = []
     User.all.each do |user|
@@ -314,7 +315,7 @@ class UsersController < ApplicationController
         message = 'You have joined the conference.'
       end
     else
-      message = "#{name_of_caller} need your help, You have joined the conference."
+      message = "#{ name_of_caller } need your help, You have joined the conference."
     end
     return message
   end
