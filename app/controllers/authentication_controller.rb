@@ -1,5 +1,5 @@
 class AuthenticationController < ApplicationController
-  before_action :authenticate_authentication!
+  # before_action :authenticate_authentication!
   skip_before_filter :verify_authenticity_token
 
   def create
