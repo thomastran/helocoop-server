@@ -1,5 +1,5 @@
 ActiveAdmin.register User do
-  before_action :authenticate_authentication!
+  # before_action :authenticate_authentication!
 
 
 # See permitted parameters documentation:
