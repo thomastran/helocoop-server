@@ -1,11 +1,15 @@
 Rails.application.routes.draw do
-  devise_for :authentications
+  devise_for :authentications, controllers: {
+        sessions: 'authentication/sessions'
+  }
+
+  # devise_for :authentications
   ActiveAdmin.routes(self)
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  root 'home#index'
+  root 'admin/users#index'
 
   # Example of regular route:
   get 'dashboard' => 'dashboard#index'
@@ -30,7 +34,7 @@ Rails.application.routes.draw do
   post 'users/createdatatest' => 'users#create_data_test'
   post 'users/findpeopletocall' => 'users#find_people_to_call'
   post 'users/makeconferencecall' => 'users#make_conference_call'
-  post 'users/learn' => 'users#learn_ruby'
+  get 'users/learn' => 'users#learn_ruby'
   post 'users/updatelocationservice' => 'users#update_location_service'
 
   post 'authentication' => 'authentication#create'

@@ -206,6 +206,12 @@ class UsersController < ApplicationController
 
   # Just testing result here
   def learn_ruby
+    if authentication_signed_in?
+      puts "true"
+    else
+      puts "false"
+    end
+    ApplicationHelper.test
     users_temp = []
     User.all.each do |user|
       if user.available && !user.phone_number.eql?("+841269162753")
