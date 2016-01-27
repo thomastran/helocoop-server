@@ -1,0 +1,9 @@
+<% if authentication_signed_in? %>
+  <li>
+  <%= link_to('Logout', destroy_authentication_session_path, :method => :get) %>
+  </li>
+<% else %>
+  <li>
+  <%= link_to('Login', new_authentication_session_path)  %>
+  </li>
+<% end %>
