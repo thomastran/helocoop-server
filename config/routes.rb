@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :authentications
   ActiveAdmin.routes(self)
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
@@ -31,6 +32,9 @@ Rails.application.routes.draw do
   post 'users/makeconferencecall' => 'users#make_conference_call'
   post 'users/learn' => 'users#learn_ruby'
   post 'users/updatelocationservice' => 'users#update_location_service'
+
+  post 'authentication' => 'authentication#create'
+
 
 
   # Example of named route that can be invoked with purchase_url(id: product.id)

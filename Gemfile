@@ -19,6 +19,7 @@ gem 'figaro'
 gem 'geocoder'
 gem 'rest-client', '~> 1.8'
 gem 'activeadmin', github: 'activeadmin'
+gem 'devise'
 group :test do
   gem 'byebug'
   gem 'rspec-rails'
