@@ -1,6 +1,6 @@
 ActiveAdmin.register User do
   before_action :authenticate_authentication!
-  actions :all, except: [:update, :destroy]
+  actions :all, except: [:destroy]
   menu priority: 1, label: "Users Account" # so it's on the very left
 # See permitted parameters documentation:
 # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
