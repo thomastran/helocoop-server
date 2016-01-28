@@ -38,7 +38,7 @@ Rails.application.routes.draw do
   post 'users/updatelocationservice' => 'users#update_location_service'
 
   post 'authentication' => 'authentication#create'
-
+  post 'users/changeinfo' => 'users#change_info'
 
 
   # Example of named route that can be invoked with purchase_url(id: product.id)

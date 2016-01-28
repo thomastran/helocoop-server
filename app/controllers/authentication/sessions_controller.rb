@@ -15,6 +15,7 @@ class Authentication::SessionsController < Devise::SessionsController
     puts authentication_session.to_s
   end
 
+
   # DELETE /resource/sign_out
   # def destroy
   #   super
