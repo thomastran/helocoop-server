@@ -10,7 +10,7 @@ Rails.application.routes.draw do
 
   # You can have the root of your site routed with "root"
   root 'admin/users#index'
-
+  get 'go' => 'admin/users#go'
   # Example of regular route:
   get 'dashboard' => 'dashboard#index'
   post 'token/generate' => 'token#generate'

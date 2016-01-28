@@ -206,19 +206,23 @@ class UsersController < ApplicationController
 
   # Just testing result here
   def learn_ruby
-    if authentication_signed_in?
-      puts "true"
-    else
-      puts "false"
-    end
-    ApplicationHelper.test
-    users_temp = []
-    User.all.each do |user|
-      if user.available && !user.phone_number.eql?("+841269162753")
-        users_temp.push user
-      end
-    end
-    render json: {:ok => users_temp}
+    # if authentication_signed_in?
+    #   puts "true"
+    # else
+    #   puts "false"
+    # end
+    # ApplicationHelper.test
+    # users_temp = []
+    # User.all.each do |user|
+    #   if user.available && !user.phone_number.eql?("+841269162753")
+    #     users_temp.push user
+    #   end
+    # end
+    # render json: {:ok => users_temp}
+    email = 'samsam@gmail.com'
+    generated_password = Devise.friendly_token.first(8)
+    user = Authentication.create!(:email => email, :password => generated_password)
+    render json: {:ok => true}
   end
   private
 
