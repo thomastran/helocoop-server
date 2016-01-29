@@ -239,7 +239,7 @@ class UsersController < ApplicationController
       puts conference.sid
       puts conference.friendly_name
     end
-    count_participant = @client.account.conferences.get(cf_id).participants.list.size
+    # count_participant = @client.account.conferences.get(cf_id).participants.list.size
     puts count_participant
     log_temp = {:id_conference => cf_id}
     if Log.exists?(:name_room => name_room) and !cf_id.eql?(nil)
