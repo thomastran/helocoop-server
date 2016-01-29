@@ -234,7 +234,7 @@ class UsersController < ApplicationController
     cf_id = nil
     @client.account.conferences.list({
       :status => "init",
-      :friendly_name => room_name}).each do |conference|
+      :friendly_name => name_room}).each do |conference|
       cf_id = conference.sid
       puts conference.sid
       puts conference.friendly_name
