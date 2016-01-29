@@ -13,6 +13,8 @@ ActiveAdmin.register User do
     column :phone_number
     column :description
     column :email
+    column :latitude
+    column :longitude
     column :address
     actions
   end
@@ -24,6 +26,8 @@ ActiveAdmin.register User do
         column :phone_number
         column :email
         column :description
+        column :latitude
+        column :longitude
         column :address
       end
     end
