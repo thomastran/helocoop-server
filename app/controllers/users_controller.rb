@@ -227,7 +227,7 @@ class UsersController < ApplicationController
   end
 
   # fuction create new log conference room (caller, room_name, participants)
-  def log_conference_call(room_name)
+  def log_conference_call(name_room)
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
     @client = Twilio::REST::Client.new account_sid, auth_token
@@ -241,8 +241,8 @@ class UsersController < ApplicationController
     end
     # count_participant = @client.account.conferences.get(cf_id).participants.list.size
     # puts count_participant
-    log_temp = {:id_conference => cf_id}
     if Log.exists?(:name_room => name_room) and !cf_id.eql?(nil)
+      log_temp = {:id_conference => cf_id}
       log = Log.find_by(:name_room => name_room)
       log.update log_temp
     end
