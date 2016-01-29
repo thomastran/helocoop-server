@@ -284,7 +284,7 @@ class UsersController < ApplicationController
     # user = Authentication.create!(:email => email, :password => generated_password)
     # s = "I have white space".delete(' ')
     # puts s
-    log_temp = {:name_room => "sam", :participants => 1, :caller => "sam"}
+    log_temp = {:id_conference => "CFbca69e908670e6b2721b259de074bdds", :name_room => "3fd85221aab381d0", :participants => 1, :caller => "sam"}
     log = Log.new log_temp
     log.save
     render json: {:ok => true}
