@@ -40,6 +40,8 @@ Rails.application.routes.draw do
   post 'authentication' => 'authentication#create'
   post 'users/changeinfo' => 'users#change_info'
 
+  post 'users/log' => 'users#log_conference_call'
+
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
   #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase

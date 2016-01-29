@@ -209,6 +209,7 @@ class UsersController < ApplicationController
         if distances.length >= 1
           call_client_to_join_conference distances, params[:name_room], user
         end
+
         success = true
         message = 'successfully'
       else
@@ -223,6 +224,27 @@ class UsersController < ApplicationController
     end
     result = {:success => success, :message => message, :distances => distances}
     render json: result
+  end
+
+  # fuction create new log conference room (caller, room_name, participants)
+  def log_conference_call(caller_name, room_name, participants)
+    account_sid = ENV['TWILIO_ACCOUNT_SID']
+    auth_token  = ENV['TWILIO_AUTH_TOKEN']
+    @client = Twilio::REST::Client.new account_sid, auth_token
+    cf_id = ''
+    @client.account.conferences.list({
+      :status => "init",
+      :friendly_name => "3fcaad2bc5e667a8"}).each do |conference|
+      cf_id = conference.sid
+      puts conference.sid
+      puts conference.friendly_name
+    end
+    count_participant = @client.account.conferences.get(cf_id).participants.list.size
+    puts count_participant
+    log_temp = {:id_conference => cf_id, :name_room => room_name, :participants => participants, :caller => caller_name}
+    log = Log.new log_temp
+    log.save
+    # render json: {:ok => true}
   end
 
   def twilio
@@ -244,9 +266,14 @@ class UsersController < ApplicationController
     #   end
     # end
     # render json: {:ok => users_temp}
-    email = 'samsam@gmail.com'
-    generated_password = Devise.friendly_token.first(8)
-    user = Authentication.create!(:email => email, :password => generated_password)
+    # email = 'samsam@gmail.com'
+    # generated_password = Devise.friendly_token.first(8)
+    # user = Authentication.create!(:email => email, :password => generated_password)
+    # s = "I have white space".delete(' ')
+    # puts s
+    log_temp = {:name_room => "sam", :participants => 1, :caller => "sam"}
+    log = Log.new log_temp
+    log.save
     render json: {:ok => true}
   end
   private
@@ -306,7 +333,15 @@ class UsersController < ApplicationController
     @client = Twilio::REST::Client.new account_sid, auth_token
     phone_number = '+14157809231'
     is_from_caller = true
-    url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ initilial_user.name }"
+    name_of_caller = initilial_user.name.delete(' ')
+
+    # Create log for callconference
+    log_temp = {:name_room => name_room, :participants => distances.length + 1, :caller => initilial_user.name}
+    log = Log.new log_temp
+    log.save
+    # done
+
+    url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ name_of_caller }"
     # Call to initilial_user first
     @client.account.calls.create(
       :url => url,
@@ -315,7 +350,7 @@ class UsersController < ApplicationController
     )
     # Call to the remaining users
     is_from_caller = false
-    url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ initilial_user.name }"
+    url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ name_of_caller }"
     distances.each do |distance|
       @client.account.calls.create(
         :url => url,
@@ -325,8 +360,8 @@ class UsersController < ApplicationController
     end
   end
 
-  def call_conference(name_room, participants, calling, name_of_caller)
-    message = say_message calling, participants, name_of_caller
+  def call_conference(name_room, participants, is_from_caller, name_of_caller)
+    message = say_message is_from_caller, participants, name_of_caller
     Twilio::TwiML::Response.new do |response|
       response.Say message
       response.Dial callerId: params[:Caller] do |dial|
