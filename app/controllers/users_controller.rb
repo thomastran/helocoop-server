@@ -227,23 +227,25 @@ class UsersController < ApplicationController
   end
 
   # fuction create new log conference room (caller, room_name, participants)
-  def log_conference_call(caller_name, room_name, participants)
+  def log_conference_call(room_name)
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
     @client = Twilio::REST::Client.new account_sid, auth_token
-    cf_id = ''
+    cf_id = nil
     @client.account.conferences.list({
       :status => "init",
-      :friendly_name => "3fcaad2bc5e667a8"}).each do |conference|
+      :friendly_name => room_name}).each do |conference|
       cf_id = conference.sid
       puts conference.sid
       puts conference.friendly_name
     end
     count_participant = @client.account.conferences.get(cf_id).participants.list.size
     puts count_participant
-    log_temp = {:id_conference => cf_id, :name_room => room_name, :participants => participants, :caller => caller_name}
-    log = Log.new log_temp
-    log.save
+    log_temp = {:id_conference => cf_id}
+    if Log.exists?(:name_room => name_room) and !cf_id.eql?(nil)
+      log = Log.find_by(:name_room => name_room)
+      log.update log_temp
+    end
     # render json: {:ok => true}
   end
 
@@ -336,7 +338,7 @@ class UsersController < ApplicationController
     name_of_caller = initilial_user.name.delete(' ')
 
     # Create log for callconference
-    log_temp = {:name_room => name_room, :participants => 1, :caller => initilial_user.name}
+    log_temp = {:name_room => name_room, :participants => distances.length + 1, :caller => initilial_user.name}
     log = Log.new log_temp
     log.save
     # done
@@ -362,6 +364,7 @@ class UsersController < ApplicationController
 
   def call_conference(name_room, participants, is_from_caller, name_of_caller)
     message = say_message is_from_caller, participants, name_of_caller
+    log_conference_call name_room
     Twilio::TwiML::Response.new do |response|
       response.Say message
       response.Dial callerId: params[:Caller] do |dial|
