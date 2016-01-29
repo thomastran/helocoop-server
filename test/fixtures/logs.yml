@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  id_conference: MyString
+  name_room: MyString
+  date_created: 2016-01-28
+  time: 
+  participants: 
+  caller: MyString
+
+two:
+  id_conference: MyString
+  name_room: MyString
+  date_created: 2016-01-28
+  time: 
+  participants: 
+  caller: MyString

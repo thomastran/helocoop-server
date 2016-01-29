@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160127024626) do
+ActiveRecord::Schema.define(version: 20160129014033) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,17 @@ ActiveRecord::Schema.define(version: 20160127024626) do
 
   add_index "authentications", ["email"], name: "index_authentications_on_email", unique: true, using: :btree
   add_index "authentications", ["reset_password_token"], name: "index_authentications_on_reset_password_token", unique: true, using: :btree
+
+  create_table "logs", force: :cascade do |t|
+    t.string   "id_conference"
+    t.string   "name_room"
+    t.string   "time"
+    t.string   "participants"
+    t.string   "caller"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.datetime "date_created"
+  end
 
   create_table "tickets", force: :cascade do |t|
     t.string   "name",         null: false
