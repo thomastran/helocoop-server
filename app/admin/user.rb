@@ -27,7 +27,7 @@ ActiveAdmin.register User do
         column :address
       end
     end
-    active_admin_comments
+    # active_admin_comments
   end
 
   form title: 'Change Some Infomation ' do |f|

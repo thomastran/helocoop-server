@@ -1,5 +1,5 @@
 ActiveAdmin.register Log do
-
+before_action :authenticate_authentication!
 # See permitted parameters documentation:
 # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
 #
@@ -12,6 +12,14 @@ ActiveAdmin.register Log do
 #   permitted << :other if resource.something?
 #   permitted
 # end
+index do
+  selectable_column
+  column :id_conference
+  column :name_room
+  column :participants
+  column :caller
+  column :created_at
+end
 
 
 end
