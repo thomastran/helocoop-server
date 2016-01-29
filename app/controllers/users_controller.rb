@@ -235,24 +235,21 @@ class UsersController < ApplicationController
     @client.account.conferences.list({
       :status => "init",
       :friendly_name => name_room}).each do |conference|
-      cf_id = conference.sid
-      puts conference.sid
-      puts conference.friendly_name
-    end
+        cf_id = conference.sid
+        Rails.logger.info "init"
+      end
     @client.account.conferences.list({
       :status => "completed",
       :friendly_name => name_room}).each do |conference|
-      cf_id = conference.sid
-      puts conference.sid
-      puts conference.friendly_name
-    end
+        cf_id = conference.sid
+        Rails.logger.info "completed"
+      end
     @client.account.conferences.list({
       :status => "in-progress",
       :friendly_name => name_room}).each do |conference|
-      cf_id = conference.sid
-      puts conference.sid
-      puts conference.friendly_name
-    end
+        cf_id = conference.sid
+        Rails.logger.info "in-progress"
+      end
     # count_participant = @client.account.conferences.get(cf_id).participants.list.size
     # puts count_participant
     if Log.exists?(:name_room => name_room) and !cf_id.eql?(nil)
