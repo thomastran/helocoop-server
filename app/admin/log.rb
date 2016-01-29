@@ -1,7 +1,7 @@
 ActiveAdmin.register Log do
 before_action :authenticate_authentication!
 actions :all, except: [:destroy, :new, :edit]
-menu priority: 2, label: "Log Conferences Room"
+menu priority: 2, label: "Twilio Conference Logs"
 # See permitted parameters documentation:
 # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
 #
