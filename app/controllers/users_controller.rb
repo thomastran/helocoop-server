@@ -283,7 +283,7 @@ class UsersController < ApplicationController
       arr_voted_tokens.each do |arr|
         user_voted = User.find_by(token: arr[:token])
         if !user_voted.eql?(nil)
-          user_voted.rates.create(point: arr[:point], voter_id: user.id, voter_name: user.name, user_name: user_voted.name, room_name: name_room)
+          user_voted.rates.create(rate_status: arr[:rateStatus], voter_id: user.id, voter_name: user.name, user_name: user_voted.name, room_name: name_room)
         end
       end
       result = true
