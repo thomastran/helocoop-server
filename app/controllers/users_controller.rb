@@ -267,8 +267,30 @@ class UsersController < ApplicationController
   end
 
   def rating
-    Rails.logger.info params.to_s
-    render json: {:success => true, :message => "successfully"}
+    if save_point_rating params[:token], params[:rateList], params[:nameRoom]
+      success = true
+      message = "successfully"
+    else
+      success = false
+      message = "unsuccessfully"
+    end
+    render json: {:success => success, :message => message}
+  end
+
+  def save_point_rating(voter_token, arr_voted_tokens, name_room)
+    if User.exists?(:token => voter_token)
+      user = User.find_by(token: voter_token)
+      arr_voted_tokens.each do |arr|
+        user_voted = User.find_by(token: arr[:token])
+        if !user_voted.eql?(nil)
+          user_voted.rates.create(point: arr[:point], voter_id: user.id, voter_name: user.name, user_name: user_voted.name, room_name: name_room)
+        end
+      end
+      result = true
+    else
+      result = false
+    end
+    return result
   end
 
   # Just testing result here
