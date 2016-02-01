@@ -222,7 +222,7 @@ class UsersController < ApplicationController
       message = 'please check your paramaters again'
       distances = nil
     end
-    result = {:success => success, :message => message, :distances => distances}
+    result = {:success => success, :message => message, :distances => distances, :name_room => params[:name_room]}
     render json: result
   end
 
@@ -232,6 +232,10 @@ class UsersController < ApplicationController
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
     @client = Twilio::REST::Client.new account_sid, auth_token
     cf_id = nil
+    # statuses = ["init", "in-progress", "completed"]
+    # statuses.each |status| do
+    #
+    # end
     @client.account.conferences.list({
       :status => "init",
       :friendly_name => name_room}).each do |conference|
@@ -250,8 +254,6 @@ class UsersController < ApplicationController
         cf_id = conference.sid
         Rails.logger.info "in-progress"
       end
-    # count_participant = @client.account.conferences.get(cf_id).participants.list.size
-    # puts count_participant
     if Log.exists?(:name_room => name_room) and !cf_id.eql?(nil)
       log_temp = {:id_conference => cf_id}
       log = Log.find_by(:name_room => name_room)
@@ -264,30 +266,17 @@ class UsersController < ApplicationController
     render xml: call_conference(params[:name_room], params[:participants], params[:is_from_caller], params[:name_of_caller]).to_xml
   end
 
+  def rating
+    Rails.logger.info params.to_s
+    render json: {:ok => true}
+  end
+
   # Just testing result here
   def learn_ruby
-    # if authentication_signed_in?
-    #   puts "true"
-    # else
-    #   puts "false"
-    # end
-    # ApplicationHelper.test
-    # users_temp = []
-    # User.all.each do |user|
-    #   if user.available && !user.phone_number.eql?("+841269162753")
-    #     users_temp.push user
-    #   end
-    # end
-    # render json: {:ok => users_temp}
-    # email = 'samsam@gmail.com'
-    # generated_password = Devise.friendly_token.first(8)
-    # user = Authentication.create!(:email => email, :password => generated_password)
-    # s = "I have white space".delete(' ')
-    # puts s
-    log_temp = {:id_conference => "CFbca69e908670e6b2721b259de074bdds", :name_room => "3fd85221aab381d0", :participants => 1, :caller => "sam"}
-    log = Log.new log_temp
-    log.save
-    render json: {:ok => true}
+    user = User.find_by(:token => 'Coi1Y73r3-ZWg7qfV8YItw')
+    user.destroy
+    # log = user.logs.create(caller: "samngu")
+    render json: {:ok => @client}
   end
   private
 
@@ -333,7 +322,7 @@ class UsersController < ApplicationController
       distance = caculate_location(user_initial, user)
       # distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
       if distance < 10
-        distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
+        distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address, user.token))
       end
     end
     distances.sort! { |a,b| a.getMile <=> b.getMile }

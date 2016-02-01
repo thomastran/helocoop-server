@@ -1,11 +1,12 @@
 class Distance
-  attr_accessor :mile, :phone_number, :name, :description, :address
-  def initialize(mile, phone_number, name, description, address)
+  attr_accessor :mile, :phone_number, :name, :description, :address, :token
+  def initialize(mile, phone_number, name, description, address, token)
     @mile = mile
     @phone_number = phone_number
     @name = name
     @description = description
     @address = address
+    @token = token
   end
 
   def getMile
