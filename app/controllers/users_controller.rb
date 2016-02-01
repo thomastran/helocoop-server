@@ -268,7 +268,7 @@ class UsersController < ApplicationController
 
   def rating
     Rails.logger.info params.to_s
-    render json: {:ok => true}
+    render json: {:success => true, :message => "successfully"}
   end
 
   # Just testing result here
