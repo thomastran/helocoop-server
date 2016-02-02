@@ -27,8 +27,8 @@ class UsersController < ApplicationController
   def request_code
     activate_code = random_activate_code.to_s
     if params.include?(:phone_number)
+      send_sms params[:phone_number], activate_code
       if User.exists?(:phone_number => params[:phone_number])
-        send_sms params[:phone_number], activate_code
         user = User.find_by(phone_number: params[:phone_number])
         user_temp = {:code => activate_code}
         user.update(user_temp)
@@ -340,7 +340,7 @@ class UsersController < ApplicationController
     @client = Twilio::REST::Client.new account_sid, auth_token
     @client.account.messages.create({
       :from => '+14157809231',
-      :to => "+841269162753",
+      :to => phone_number,
       :body => message
     })
   end
