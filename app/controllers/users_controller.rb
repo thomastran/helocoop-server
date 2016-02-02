@@ -232,28 +232,33 @@ class UsersController < ApplicationController
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
     @client = Twilio::REST::Client.new account_sid, auth_token
     cf_id = nil
-    # statuses = ["init", "in-progress", "completed"]
-    # statuses.each |status| do
-    #
-    # end
-    @client.account.conferences.list({
-      :status => "init",
-      :friendly_name => name_room}).each do |conference|
-        cf_id = conference.sid
-        Rails.logger.info "init"
-      end
-    @client.account.conferences.list({
-      :status => "completed",
-      :friendly_name => name_room}).each do |conference|
-        cf_id = conference.sid
-        Rails.logger.info "completed"
-      end
-    @client.account.conferences.list({
-      :status => "in-progress",
-      :friendly_name => name_room}).each do |conference|
-        cf_id = conference.sid
-        Rails.logger.info "in-progress"
-      end
+    statuses = ["init", "in-progress", "completed"]
+    statuses.each |status| do
+      @client.account.conferences.list({
+        :status => status,
+        :friendly_name => name_room}).each do |conference|
+          cf_id = conference.sid
+          Rails.logger.info "init"
+        end
+    end
+    # @client.account.conferences.list({
+    #   :status => "init",
+    #   :friendly_name => name_room}).each do |conference|
+    #     cf_id = conference.sid
+    #     Rails.logger.info "init"
+    #   end
+    # @client.account.conferences.list({
+    #   :status => "completed",
+    #   :friendly_name => name_room}).each do |conference|
+    #     cf_id = conference.sid
+    #     Rails.logger.info "completed"
+    #   end
+    # @client.account.conferences.list({
+    #   :status => "in-progress",
+    #   :friendly_name => name_room}).each do |conference|
+    #     cf_id = conference.sid
+    #     Rails.logger.info "in-progress"
+    #   end
     if Log.exists?(:name_room => name_room) and !cf_id.eql?(nil)
       log_temp = {:id_conference => cf_id}
       log = Log.find_by(:name_room => name_room)
@@ -285,12 +290,12 @@ class UsersController < ApplicationController
         user_voted = User.find_by(token: arr[:token])
         if !user_voted.eql?(nil)
           user_voted.rates.create(
-              rate_status: arr[:rateStatus],
-              voter_id: user.id,
-              voter_name: user.name,
-              user_name: user_voted.name,
-              room_name: name_room
-          )
+            rate_status: arr[:rateStatus],
+            voter_id: user.id,
+            voter_name: user.name,
+            user_name: user_voted.name,
+            room_name: name_room
+            )
         end
       end
       result = true
