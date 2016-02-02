@@ -364,7 +364,7 @@ class UsersController < ApplicationController
     name_of_caller = initilial_user.name.delete(' ')
 
     # Create log for callconference
-    log_temp = {:name_room => name_room, :participants => distances.length + 1, :caller => initilial_user.name}
+    log_temp = {:name_room => name_room, :participants => distances.length + 1, :caller => initilial_user.name, :user_id => initilial_user.id}
     log = Log.new log_temp
     log.save
     # done
