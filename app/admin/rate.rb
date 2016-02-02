@@ -15,8 +15,12 @@ actions :all, except: [:destroy, :new, :edit]
 # end
 index do
   selectable_column
-  column :user_name
-  column "Voted by", :voter_name
+  column :user_name do |rate|
+    link_to rate.user_name, admin_user_path(rate.user_id)
+  end
+  column "Voted by", :voter_name do |rate|
+    link_to rate.voter_name, admin_user_path(rate.voter_id)
+  end
   column :room_name
   column :rate_status
   column :created_at
@@ -35,7 +39,7 @@ show do
   # active_admin_comments
 end
 action_item :view, only: :show do
-  link_to 'View on site', post_path(rate) 
+  link_to 'View on site', post_path(rate)
 end
 
 end
