@@ -233,7 +233,7 @@ class UsersController < ApplicationController
     @client = Twilio::REST::Client.new account_sid, auth_token
     cf_id = nil
     statuses = ["init", "in-progress", "completed"]
-    statuses.each |status| do
+    statuses.each do |status|
       @client.account.conferences.list({
         :status => status,
         :friendly_name => name_room}).each do |conference|
