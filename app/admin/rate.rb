@@ -21,7 +21,9 @@ index do
   column "Voted by", :voter_name do |rate|
     link_to rate.voter_name, admin_user_path(rate.voter_id)
   end
-  column :room_name
+  column :room_name do |rate|
+    link_to rate.room_name, admin_log_path(rate.log_id)
+  end
   column :rate_status
   column :created_at
   actions

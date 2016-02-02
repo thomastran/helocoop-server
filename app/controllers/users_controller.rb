@@ -269,6 +269,7 @@ class UsersController < ApplicationController
   def save_rating(voter_token, arr_voted_tokens, name_room)
     if User.exists?(:token => voter_token)
       user = User.find_by(token: voter_token)
+      log = Log.find_by(name_room: name_room)
       arr_voted_tokens.each do |arr|
         user_voted = User.find_by(token: arr[:token])
         if !user_voted.eql?(nil)
@@ -277,7 +278,8 @@ class UsersController < ApplicationController
             voter_id: user.id,
             voter_name: user.name,
             user_name: user_voted.name,
-            room_name: name_room
+            room_name: name_room,
+            log_id: log.id
             )
         end
       end
