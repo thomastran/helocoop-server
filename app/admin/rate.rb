@@ -34,6 +34,8 @@ show do
   end
   # active_admin_comments
 end
-
+action_item :view, only: :show do
+  link_to 'View on site', post_path(rate) 
+end
 
 end
