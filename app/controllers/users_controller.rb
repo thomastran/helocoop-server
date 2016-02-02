@@ -231,16 +231,26 @@ class UsersController < ApplicationController
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
     @client = Twilio::REST::Client.new account_sid, auth_token
-    cf_id = nil
-    statuses = ["init", "in-progress", "completed"]
-    statuses.each do |status|
-      @client.account.conferences.list({
-        :status => status,
-        :friendly_name => name_room}).each do |conference|
-          cf_id = conference.sid
-          Rails.logger.info "init"
+    if Log.exists?(:name_room => name_room)
+      log = Log.find_by(name_room: name_room)
+      if log.id_conference.eqls?(nil)
+        cf_id = nil
+        statuses = ["init", "in-progress", "completed"]
+        statuses.each do |status|
+          @client.account.conferences.list({
+            :status => status,
+            :friendly_name => name_room}).each do |conference|
+              cf_id = conference.sid
+              Rails.logger.info "init"
+            end
         end
+        if !cf_id.eql?(nil)
+          log_temp = {:id_conference => cf_id}
+          log.update log_temp
+        end
+      end
     end
+
     # @client.account.conferences.list({
     #   :status => "init",
     #   :friendly_name => name_room}).each do |conference|
@@ -259,11 +269,11 @@ class UsersController < ApplicationController
     #     cf_id = conference.sid
     #     Rails.logger.info "in-progress"
     #   end
-    if Log.exists?(:name_room => name_room) and !cf_id.eql?(nil)
-      log_temp = {:id_conference => cf_id}
-      log = Log.find_by(:name_room => name_room)
-      log.update log_temp
-    end
+    # if Log.exists?(:name_room => name_room) and !cf_id.eql?(nil)
+    #   log_temp = {:id_conference => cf_id}
+    #   log = Log.find_by(:name_room => name_room)
+    #   log.update log_temp
+    # end
     # render json: {:ok => true}
   end
 
