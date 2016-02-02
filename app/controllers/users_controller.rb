@@ -317,8 +317,17 @@ class UsersController < ApplicationController
 
   # Just testing result here
   def learn_ruby
-    user = User.find_by(:token => 'Coi1Y73r3-ZWg7qfV8YItw')
-    user.destroy
+    # user = User.find_by(:token => 'Coi1Y73r3-ZWg7qfV8YItw')
+    # user.destroy
+    account_sid = ENV['TWILIO_ACCOUNT_SID']
+    auth_token  = ENV['TWILIO_AUTH_TOKEN']
+    message = 'Your HelpCoop activation number is . Please enter this number in the HelpCoop app to activate.'
+    @client = Twilio::REST::Client.new account_sid, auth_token
+    @client.account.messages.create({
+      :from => '+14157809231',
+      :to => "+841269162753",
+      :body => message
+    })
     # log = user.logs.create(caller: "samngu")
     render json: {:ok => @client}
   end
@@ -331,7 +340,7 @@ class UsersController < ApplicationController
     @client = Twilio::REST::Client.new account_sid, auth_token
     @client.account.messages.create({
       :from => '+14157809231',
-      :to => phone_number,
+      :to => "+841269162753",
       :body => message
     })
   end
