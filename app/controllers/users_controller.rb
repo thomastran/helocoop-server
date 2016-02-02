@@ -35,8 +35,8 @@ class UsersController < ApplicationController
         result = {:success => true, :message => 'updated new phone number successfully'}
       else
         user_temp = {:phone_number => params[:phone_number], :code => activate_code}
-        @user = User.new(user_temp)
-        if @user.save
+        user = User.new(user_temp)
+        if user.save
           result = {:success => true, :message => 'created new phone number successfully'}
         else
           result = {:success => false, :message => 'created new phone number unsuccessfully'}
@@ -74,12 +74,7 @@ class UsersController < ApplicationController
   # update information name, email, address, description
   def update
     if params.include?(:phone_number) and params.include?(:name) and params.include?(:address) and params.include?(:email) and params.include?(:description)
-      phone_number = params[:phone_number]
-      name = params[:name]
-      address = params[:address]
-      email = params[:email]
-      description = params[:description]
-      render json: update_user(phone_number, email, address, name, description)
+      render json: update_user params[:phone_number], params[:email], params[:address], params[:name], params[:description]
     else
       result = {:success => false, :message => 'please check the paramaters'}
       render json: result
@@ -209,7 +204,6 @@ class UsersController < ApplicationController
         if distances.length >= 1
           call_client_to_join_conference distances, params[:name_room], user
         end
-
         success = true
         message = 'successfully'
       else
@@ -250,31 +244,6 @@ class UsersController < ApplicationController
         end
       end
     end
-
-    # @client.account.conferences.list({
-    #   :status => "init",
-    #   :friendly_name => name_room}).each do |conference|
-    #     cf_id = conference.sid
-    #     Rails.logger.info "init"
-    #   end
-    # @client.account.conferences.list({
-    #   :status => "completed",
-    #   :friendly_name => name_room}).each do |conference|
-    #     cf_id = conference.sid
-    #     Rails.logger.info "completed"
-    #   end
-    # @client.account.conferences.list({
-    #   :status => "in-progress",
-    #   :friendly_name => name_room}).each do |conference|
-    #     cf_id = conference.sid
-    #     Rails.logger.info "in-progress"
-    #   end
-    # if Log.exists?(:name_room => name_room) and !cf_id.eql?(nil)
-    #   log_temp = {:id_conference => cf_id}
-    #   log = Log.find_by(:name_room => name_room)
-    #   log.update log_temp
-    # end
-    # render json: {:ok => true}
   end
 
   def twilio
@@ -288,7 +257,6 @@ class UsersController < ApplicationController
     else
       success = false
       message = "unsuccessfully"
-
     end
     render json: {:success => success, :message => message}
   end
