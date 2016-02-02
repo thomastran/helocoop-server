@@ -22,7 +22,7 @@ index do
   column :name_room
   column :participants
   column :caller do |log|
-    link_to log.name_room, admin_user_path(log)
+    link_to log.caller, admin_user_path(log.user_id)
   end
   column :created_at
   actions
