@@ -74,7 +74,12 @@ class UsersController < ApplicationController
   # update information name, email, address, description
   def update
     if params.include?(:phone_number) and params.include?(:name) and params.include?(:address) and params.include?(:email) and params.include?(:description)
-      render json: update_user params[:phone_number], params[:email], params[:address], params[:name], params[:description]
+      phone_number = params[:phone_number]
+      name = params[:name]
+      address = params[:address]
+      email = params[:email]
+      description = params[:description]
+      render json: update_user(phone_number, email, address, name, description)
     else
       result = {:success => false, :message => 'please check the paramaters'}
       render json: result
