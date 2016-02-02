@@ -233,7 +233,7 @@ class UsersController < ApplicationController
     @client = Twilio::REST::Client.new account_sid, auth_token
     if Log.exists?(:name_room => name_room)
       log = Log.find_by(name_room: name_room)
-      if log.id_conference.eqls?(nil)
+      if log.id_conference.eql?(nil)
         cf_id = nil
         statuses = ["init", "in-progress", "completed"]
         statuses.each do |status|
