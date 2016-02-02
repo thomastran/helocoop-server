@@ -7,9 +7,19 @@ ActiveAdmin.register User do
 #
   permit_params :phone_number, :email, :code, :address, :name, :created_at, :updated_at, :token, :latitude, :longitude, :available, :instance_id, :description
 
+  # sidebar "Twilio Conference Log", only: [:show] do
+  #   ul do
+  #     li link_to "Show Log", admin_user_logs_path(user)
+  #   end
+  # end
+  #
+  # action_item :view, only: :show do
+  #   link_to 'View on site', admin_user_logs_path(user)
+  # end
+
   index do
     selectable_column
-    column :name
+    column :name 
     column :phone_number
     column :description
     column :email

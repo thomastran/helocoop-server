@@ -2,6 +2,8 @@ ActiveAdmin.register Log do
 before_action :authenticate_authentication!
 actions :all, except: [:destroy, :new, :edit]
 menu priority: 2, label: "Twilio Conference Logs"
+# belongs_to :user
+# navigation_menu :user
 # See permitted parameters documentation:
 # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
 #
@@ -19,7 +21,9 @@ index do
   column :id_conference
   column :name_room
   column :participants
-  column :caller
+  column :caller do |log|
+    link_to log.name_room, admin_user_path(log)
+  end
   column :created_at
   actions
 end
