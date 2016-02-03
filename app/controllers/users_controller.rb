@@ -207,6 +207,7 @@ class UsersController < ApplicationController
         user = User.find_by(token: params[:token])
         distances = find_nearest_people user, 2
         if distances.length >= 1
+          send_data_to_devices distances
           call_client_to_join_conference distances, params[:name_room], user
         end
         success = true
@@ -290,6 +291,34 @@ class UsersController < ApplicationController
     return result
   end
 
+  def making_request_to_gcm
+    token_registation = 'dbg3iaUd4do:APA91bEXv5Rnu_dL0k2h3Z4CUXVL1AeX4gGMgCMtqwL27JPkSwFsiBIo_9dFAICVSd_5L5vnJEMVh24Bi7Ta49HnVCwpKYr74g59kT3z5sX8sXx9BDQy2vejmbScLPdoptxlAWv3R0xs'
+    authorization = 'key=AIzaSyC6aXtvQBxqEueZ3MYN9EmSp3Kqv1JY-EM'
+    data = {:data =>
+              {:gcm_name_caller => 'Jack Ma Levandosk',
+               :gcm_address_caller => 'Newyork',
+               :gcm_description_caller => 'Developer'},
+               :to => token_registation
+            }.to_json
+    header = {:Authorization => authorization, :content_type => 'application/json'}
+    response = RestClient.post 'https://gcm-http.googleapis.com/gcm/send', data, header
+    render json: response
+  end
+
+  def send_data_to_devices(distances)
+    authorization = 'key=AIzaSyC6aXtvQBxqEueZ3MYN9EmSp3Kqv1JY-EM'
+    header = {:Authorization => authorization, :content_type => 'application/json'}
+    distances.each do |distance|
+      data = {:data =>
+                {:gcm_name_caller => distance.name,
+                 :gcm_address_caller => distance.address,
+                 :gcm_description_caller => distance.description},
+                 :to => distance.instance_id
+              }.to_json
+      RestClient.post 'https://gcm-http.googleapis.com/gcm/send', data, header
+    end
+  end
+
   # Just testing result here
   def learn_ruby
     # user = User.find_by(:token => 'Coi1Y73r3-ZWg7qfV8YItw')
@@ -350,7 +379,7 @@ class UsersController < ApplicationController
       distance = caculate_location(user_initial, user)
       # distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
       if distance < 10
-        distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address, user.token))
+        distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address, user.token, user.instance_id))
       end
     end
     distances.sort! { |a,b| a.getMile <=> b.getMile }
@@ -436,15 +465,6 @@ class UsersController < ApplicationController
 
   def caculate_location(user_first, user_second)
     Geocoder::Calculations.distance_between([user_first.latitude, user_first.longitude], [user_second.latitude, user_second.longitude])
-  end
-
-  def making_request_to_gcm
-    token_registation = 'dyrIug-Vg3k:APA91bHiKm-LJnSugFoVgH8hpWoi4lRSD8F_sJ4M_QZKWjekL0dLTWEolvNSZ9h8wQ_qduivMpuGK9o79eJuP_g9V3cONs7N9KSSRO-kXOguBFoa0_UYuqSM9ziYGajYs6D3M3qcINL7'
-    authorization = 'key=AIzaSyBmj7ad8xxn2wPf7zD4bb02-wI4mI8keWg'
-    data = {:data => {:message => 'Novahub Studio Like You', :time => '123'}, :to => '/topics/global'}.to_json
-    header = {:Authorization => authorization, :content_type => 'application/json'}
-    response = RestClient.post 'https://gcm-http.googleapis.com/gcm/send', data, header
-    render json: response
   end
 
   def request_to_gcm(distances)
