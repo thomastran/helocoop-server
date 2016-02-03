@@ -207,7 +207,7 @@ class UsersController < ApplicationController
         user = User.find_by(token: params[:token])
         distances = find_nearest_people user, 2
         if distances.length >= 1
-          send_data_to_devices distances
+          send_data_to_devices distances, user
           call_client_to_join_conference distances, params[:name_room], user
         end
         success = true
@@ -305,14 +305,14 @@ class UsersController < ApplicationController
     render json: response
   end
 
-  def send_data_to_devices(distances)
+  def send_data_to_devices(distances, initilial_user)
     authorization = 'key=AIzaSyC6aXtvQBxqEueZ3MYN9EmSp3Kqv1JY-EM'
     header = {:Authorization => authorization, :content_type => 'application/json'}
     distances.each do |distance|
       data = {:data =>
-                {:gcm_name_caller => distance.name,
-                 :gcm_address_caller => distance.address,
-                 :gcm_description_caller => distance.description},
+                {:gcm_name_caller => initilial_user.name,
+                 :gcm_address_caller => initilial_user.address,
+                 :gcm_description_caller => initilial_user.description},
                  :to => distance.instance_id
               }.to_json
       RestClient.post 'https://gcm-http.googleapis.com/gcm/send', data, header
