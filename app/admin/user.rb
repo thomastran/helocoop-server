@@ -1,6 +1,6 @@
 ActiveAdmin.register User do
   before_action :authenticate_authentication!
-  actions :all, except: [:destroy, :new, :edit]
+  actions :all, except: [:destroy, :new]
   menu priority: 1, label: "Users Account" # so it's on the very left
 # See permitted parameters documentation:
 # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
@@ -19,7 +19,7 @@ ActiveAdmin.register User do
 
   index do
     selectable_column
-    column :name 
+    column :name
     column :phone_number
     column :description
     column :email
@@ -51,6 +51,8 @@ ActiveAdmin.register User do
       input :email, label: "Email"
       input :address, label: "Address"
       input :description, label: "Description"
+      input :latitude
+      input :longitude
     end
     para "Press cancel to return to the list without saving."
     actions
