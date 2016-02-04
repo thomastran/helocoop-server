@@ -312,7 +312,9 @@ class UsersController < ApplicationController
       data = {:data =>
                 {:gcm_name_caller => initilial_user.name,
                  :gcm_address_caller => initilial_user.address,
-                 :gcm_description_caller => initilial_user.description},
+                 :gcm_description_caller => initilial_user.description,
+                 :latitude => initilial_user.latitude,
+                 :longitude => initilial_user.longitude},
                  :to => distance.instance_id
               }.to_json
       RestClient.post 'https://gcm-http.googleapis.com/gcm/send', data, header
