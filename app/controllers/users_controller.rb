@@ -309,9 +309,7 @@ class UsersController < ApplicationController
     authorization = 'key=AIzaSyC6aXtvQBxqEueZ3MYN9EmSp3Kqv1JY-EM'
     header = {:Authorization => authorization, :content_type => 'application/json'}
     distances.each_with_index do |distance, index|
-      distances_temp = Array.new
-      distances_temp = distances
-      distances_temp.delete_at(index)
+      distances_temp = []
       data = {:data =>
                 {:gcm_name_caller => initilial_user.name,
                  :gcm_address_caller => initilial_user.address,
