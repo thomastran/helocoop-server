@@ -310,7 +310,6 @@ class UsersController < ApplicationController
     header = {:Authorization => authorization, :content_type => 'application/json'}
     distances.each_with_index do |distance, index|
       distances_temp = distances
-      distances_temp.delete_at(index)
       data = {:data =>
                 {:gcm_name_caller => initilial_user.name,
                  :gcm_address_caller => initilial_user.address,
