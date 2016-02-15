@@ -308,7 +308,7 @@ class UsersController < ApplicationController
   def send_data_to_devices(distances, initilial_user)
     authorization = 'key=AIzaSyC6aXtvQBxqEueZ3MYN9EmSp3Kqv1JY-EM'
     header = {:Authorization => authorization, :content_type => 'application/json'}
-    distances.each do |distance|
+    distances.each_with_index do |distance, index|
       data = {:data =>
                 {:gcm_name_caller => initilial_user.name,
                  :gcm_address_caller => initilial_user.address,
