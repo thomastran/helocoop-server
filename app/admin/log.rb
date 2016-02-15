@@ -18,7 +18,6 @@ menu priority: 2, label: "Twilio Conference Logs"
 # end
 index do
   selectable_column
-  column :id_conference
   column :name_room
   column :participants
   column :caller do |log|
