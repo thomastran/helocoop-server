@@ -309,12 +309,15 @@ class UsersController < ApplicationController
     authorization = 'key=AIzaSyC6aXtvQBxqEueZ3MYN9EmSp3Kqv1JY-EM'
     header = {:Authorization => authorization, :content_type => 'application/json'}
     distances.each_with_index do |distance, index|
+      distances_temp = distances
+      distances_temp.delete_at(index)
       data = {:data =>
                 {:gcm_name_caller => initilial_user.name,
                  :gcm_address_caller => initilial_user.address,
                  :gcm_description_caller => initilial_user.description,
                  :latitude => initilial_user.latitude,
-                 :longitude => initilial_user.longitude},
+                 :longitude => initilial_user.longitude,
+                 :gcm_users => distances_temp},
                  :to => distance.instance_id
               }.to_json
       RestClient.post 'https://gcm-http.googleapis.com/gcm/send', data, header
