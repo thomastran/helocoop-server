@@ -311,7 +311,7 @@ class UsersController < ApplicationController
     distances.each_with_index do |distance, index|
       distances_empty = []
       distances_temp = distances_empty + distances
-      distances_temp.delete_at(index)
+      # distances_temp.delete_at(index)
       # data = {:data =>
       #           {:gcm_name_caller => initilial_user.name,
       #            :gcm_address_caller => initilial_user.address,
@@ -323,7 +323,8 @@ class UsersController < ApplicationController
       #         }.to_json
       data = {:data =>
                 {:gcm_initial_user => initilial_user,
-                 :gcm_users => distances_temp},
+                 :gcm_users => distances_temp,
+                 :gcm_name_room => name_room},
                  :to => distance.instance_id
              }.to_json
       RestClient.post 'https://gcm-http.googleapis.com/gcm/send', data, header
