@@ -311,7 +311,7 @@ class UsersController < ApplicationController
     distances.each_with_index do |distance, index|
       distances_empty = []
       distances_temp = distances_empty + distances
-      # distances_temp.delete_at(index)
+      distances_temp.delete_at(index)
       # data = {:data =>
       #           {:gcm_name_caller => initilial_user.name,
       #            :gcm_address_caller => initilial_user.address,
