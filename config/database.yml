@@ -1,5 +1,5 @@
 default: &default
-  adapter: postgresql
+  adapter: mysql2
   encoding: unicode
   pool: 5
   timeout: 5000
