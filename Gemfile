@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # ruby '2.2.4'
 ruby '2.2.1'
 gem 'rails', '4.2.0'
-gem 'mysql2'
+# gem 'mysql2'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -22,6 +22,7 @@ gem 'geocoder'
 gem 'rest-client', '~> 1.8'
 gem 'activeadmin', github: 'activeadmin'
 gem 'devise'
+gem 'mysql2'
 group :test do
   gem 'byebug'
   gem 'rspec-rails'
