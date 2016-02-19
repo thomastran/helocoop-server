@@ -4,7 +4,7 @@ default: &default
   pool: 5
   username: helpcoop
   password: helpcoop123
-  host: http://8497f36947e5d6193a399a08a47fc1adddbd7c07.rackspaceclouddb.com/
+  host: 8497f36947e5d6193a399a08a47fc1adddbd7c07.rackspaceclouddb.com/
 
 # default: &default
 #   adapter: mysql2
