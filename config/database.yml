@@ -6,9 +6,13 @@ default: &default
 
 development:
   <<: *default
-  database: dfc6nb5p3k8a1j
-  username: utwactytaktshy
-  password: sl9tJJfnbY74a9W7SZMdtTbeGq
+  # database:  browser_calls_rails_development
+  # database: dfc6nb5p3k8a1j
+  # username: utwactytaktshy
+  # password: sl9tJJfnbY74a9W7SZMdtTbeGq
+    database: http://8497f36947e5d6193a399a08a47fc1adddbd7c07.rackspaceclouddb.com/
+    username: helpcoop
+    password: helpcoop123
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
