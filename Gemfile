@@ -12,7 +12,8 @@ group :assets do
   gem 'coffee-rails', '~> 4.1.0'
   gem 'uglifier', '>= 1.3.0'
 end
-
+gem 'execjs'
+gem 'therubyracer', :platforms => :ruby
 gem 'bootstrap-sass', '~> 3.3.5'
 gem 'jquery-rails'
 gem 'turbolinks'
