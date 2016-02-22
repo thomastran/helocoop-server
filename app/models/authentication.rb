@@ -1,7 +1,7 @@
 class Authentication < ActiveRecord::Base
   # Include default devise modules. Others available are:
   # :trackable,
-  # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable, :timeoutable,
+  # :confirmable, :lockable, :timeoutable and :omniauthable  :registerable,
+  devise :database_authenticatable, :timeoutable,
          :rememberable,  :validatable
 end
