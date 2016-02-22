@@ -315,10 +315,10 @@ class UsersController < ApplicationController
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
     @client = Twilio::REST::Client.new account_sid, auth_token
-    @client.account.calls.create({
-      :from => '+14157809231',
-      :to => "+841269162753"
-    })
+    @client.account.calls.create(
+      :url => "http://demo.twilio.com/docs/voice.xml",
+      :to => "+841269162753",
+      :from => "+14157809231")
     # log = user.logs.create(caller: "samngu")
     render json: {:ok => true}
   end
@@ -387,7 +387,7 @@ class UsersController < ApplicationController
     log.save
     # done
 
-    url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ name_of_caller }"
+    url = "http://162.242.175.133/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ name_of_caller }"
     # Call to initilial_user first
     @client.account.calls.create(
       :url => url,
@@ -396,7 +396,7 @@ class UsersController < ApplicationController
     )
     # Call to the remaining users
     is_from_caller = false
-    url = "https://sleepy-tundra-5643.herokuapp.com/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ name_of_caller }"
+    url = "http://162.242.175.133/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ name_of_caller }"
     distances.each do |distance|
       @client.account.calls.create(
         :url => url,
