@@ -291,20 +291,6 @@ class UsersController < ApplicationController
     return result
   end
 
-  def making_request_to_gcm
-    token_registation = 'dbg3iaUd4do:APA91bEXv5Rnu_dL0k2h3Z4CUXVL1AeX4gGMgCMtqwL27JPkSwFsiBIo_9dFAICVSd_5L5vnJEMVh24Bi7Ta49HnVCwpKYr74g59kT3z5sX8sXx9BDQy2vejmbScLPdoptxlAWv3R0xs'
-    authorization = 'key=AIzaSyC6aXtvQBxqEueZ3MYN9EmSp3Kqv1JY-EM'
-    data = {:data =>
-              {:gcm_name_caller => 'Jack Ma Levandosk',
-               :gcm_address_caller => 'Newyork',
-               :gcm_description_caller => 'Developer'},
-               :to => token_registation
-            }.to_json
-    header = {:Authorization => authorization, :content_type => 'application/json'}
-    response = RestClient.post 'https://gcm-http.googleapis.com/gcm/send', data, header
-    render json: response
-  end
-
   def send_data_to_devices(distances, initilial_user, name_room)
     authorization = 'key=AIzaSyC6aXtvQBxqEueZ3MYN9EmSp3Kqv1JY-EM'
     header = {:Authorization => authorization, :content_type => 'application/json'}
@@ -312,15 +298,6 @@ class UsersController < ApplicationController
       distances_empty = []
       distances_temp = distances_empty + distances
       distances_temp.delete_at(index)
-      # data = {:data =>
-      #           {:gcm_name_caller => initilial_user.name,
-      #            :gcm_address_caller => initilial_user.address,
-      #            :gcm_description_caller => initilial_user.description,
-      #            :latitude => initilial_user.latitude,
-      #            :longitude => initilial_user.longitude,
-      #            :gcm_users => distances_temp},
-      #            :to => distance.instance_id
-      #         }.to_json
       data = {:data =>
                 {:gcm_initial_user => initilial_user,
                  :gcm_users => distances_temp,
@@ -337,15 +314,13 @@ class UsersController < ApplicationController
     # user.destroy
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
-    message = 'Your HelpCoop activation number is . Please enter this number in the HelpCoop app to activate.'
     @client = Twilio::REST::Client.new account_sid, auth_token
-    @client.account.messages.create({
+    @client.account.calls.create({
       :from => '+14157809231',
-      :to => "+841269162753",
-      :body => message
+      :to => "+841269162753"
     })
     # log = user.logs.create(caller: "samngu")
-    render json: {:ok => @client}
+    render json: {:ok => true}
   end
   private
 

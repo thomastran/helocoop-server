@@ -22,7 +22,6 @@ Rails.application.routes.draw do
   post 'users/update' => 'users#update'
   post 'users/clear' => 'users#clear_data_user'
   post 'users/verifycode' => 'users#verify_code'
-  post 'users/requestgcm' => 'users#making_request_to_gcm'
   post 'users/updatelocation' => 'users#update_location'
   post 'users/callphonenumbers' => 'users#callclient'
   post 'users/callconference' => 'users#twilio'
