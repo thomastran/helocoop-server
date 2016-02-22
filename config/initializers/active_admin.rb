@@ -208,7 +208,7 @@ ActiveAdmin.setup do |config|
   #
     config.namespace :admin do |admin|
       admin.build_menu :utility_navigation do |menu|
-        menu.add label: "Log Out", url: "https://sleepy-tundra-5643.herokuapp.com/authentications/sign_out"
+        menu.add label: "Log Out", url: "http://162.242.175.133/authentications/sign_out"
         # admin.add_logout_button_to_menu menu
       end
     end
