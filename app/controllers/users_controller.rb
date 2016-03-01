@@ -71,6 +71,30 @@ class UsersController < ApplicationController
     render json: result, status: 200
   end
 
+  def get_instance_id
+    if params.include?(:instance_id) and params.include?(:token)
+      if User.exists?(:token => params[:token])
+        user_temp = {:instance_id => params[:instance_id]}
+        user = User.find_by(:token => params[:token])
+        if user.update(user_temp)
+          success = true
+          message = 'Update instance_id successfully'
+        else
+          success = false
+          message = 'Cannot update instance_id to database'
+        end
+      else
+        success = false
+        message = 'Token does not exist'
+      end
+    else
+      success = false
+      message = 'please check paramaters'
+    end
+    result = {:success => success, :message => message}
+    render json: result, status: 200
+  end
+
   # update information name, email, address, description
   def update
     if params.include?(:phone_number) and params.include?(:name) and params.include?(:address) and params.include?(:email) and params.include?(:description)

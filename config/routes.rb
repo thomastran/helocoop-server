@@ -41,6 +41,7 @@ Rails.application.routes.draw do
 
   post 'users/log' => 'users#log_conference_call'
   post 'users/rating' => 'users#rating'
+  post 'users/getinstanceid' => 'users#get_instance_id'
 
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
