@@ -48,17 +48,10 @@ class UsersController < ApplicationController
 
   # verify code to activate the phone number
   def verify_code
-    if params.include?(:phone_number) and params.include?(:activate_code) and params.include?(:instance_id)
+    if params.include?(:phone_number) and params.include?(:activate_code)
       if User.exists?(:phone_number => params[:phone_number], :code => params[:activate_code])
-        user_temp = {:instance_id => params[:instance_id]}
-        user = User.find_by(:phone_number => params[:phone_number], :code => params[:activate_code])
-        if user.update(user_temp)
-          success = true
-          message = 'activate successfully'
-        else
-          success = false
-          message = 'cannot update instance id successfully'
-        end
+        success = true
+        message = 'activate successfully'
       else
         success = false
         message = 'phone number does not exist or code activate is not ok'
