@@ -44,6 +44,14 @@ Rails.application.routes.draw do
   post 'users/getinstanceid' => 'users#get_instance_id'
 
   # Voip Branch
+  post 'voip/requestcode' => 'voip#request_code'
+  post 'voip/verifycode' => 'voip#verify_code'
+  post 'voip/update' => 'voip#update'
+  post 'voip/updatelocationservice' => 'voip#update_location_service'
+  post 'voip/getinstanceid' => 'voip#get_instance_id'
+  post 'voip/updatelocation' => 'voip#update_location'
+  post 'voip/turnon' => 'voip#turn_on_samaritan'
+  post 'voip/turnoff' => 'voip#turn_off_samaritan'
 
 
   # Example of named route that can be invoked with purchase_url(id: product.id)

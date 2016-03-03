@@ -32,6 +32,23 @@ module ApplicationHelper
     return result
   end
 
+  def ApplicationHelper.update_user_voip(phone_number, email, address, name, description)
+    token = ApplicationHelper.generate_token
+    user_temp = { :email => email, :address => address, :name => name, :token => token, :description => description }
+    user = UsersVoip.find_by(phone_number: phone_number)
+    if user.update(user_temp)
+      success = true
+      message = 'updated successfully'
+      token_response = token
+    else
+      success = false
+      message = 'updated unsuccessfully'
+      token_response = nil
+    end
+    result = Info_Response.new(success, message, token_response)
+    return result
+  end
+
   def ApplicationHelper.call_client_to_join_conference(distances, name_room, initilial_user)
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
