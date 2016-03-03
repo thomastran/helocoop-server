@@ -123,7 +123,7 @@ module ApplicationHelper
     ApplicationHelper.log_conference_call name_room
     Twilio::TwiML::Response.new do |response|
       response.Say message
-      response.Dial callerId: params[:Caller] do |dial|
+      response.Dial callerId: name_of_caller do |dial|
         dial.Conference name_room,
           waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
           muted:  "false",
