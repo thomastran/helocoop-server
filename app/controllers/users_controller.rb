@@ -27,7 +27,8 @@ class UsersController < ApplicationController
   def request_code
     activate_code = random_activate_code.to_s
     if params.include?(:phone_number)
-      send_sms params[:phone_number], activate_code
+        # send_sms params[:phone_number], activate_code
+      ApplicationHelper.send_sms params[:phone_number], activate_code
       if User.exists?(:phone_number => params[:phone_number])
         user = User.find_by(phone_number: params[:phone_number])
         user_temp = {:code => activate_code}
@@ -330,29 +331,30 @@ class UsersController < ApplicationController
     # user = User.find_by(:token => 'Coi1Y73r3-ZWg7qfV8YItw')
     # user.destroy
     # Test new branch
-    account_sid = ENV['TWILIO_ACCOUNT_SID']
-    auth_token  = ENV['TWILIO_AUTH_TOKEN']
-    @client = Twilio::REST::Client.new account_sid, auth_token
-    @client.account.calls.create(
-      :url => "http://demo.twilio.com/docs/voice.xml",
-      :to => "+841269162753",
-      :from => "+14157809231")
+    # account_sid = ENV['TWILIO_ACCOUNT_SID']
+    # auth_token  = ENV['TWILIO_AUTH_TOKEN']
+    # @client = Twilio::REST::Client.new account_sid, auth_token
+    # @client.account.calls.create(
+    #   :url => "http://demo.twilio.com/docs/voice.xml",
+    #   :to => "+841269162753",
+    #   :from => "+14157809231")
     # log = user.logs.create(caller: "samngu")
+    ApplicationHelper.test()
     render json: {:ok => true}
   end
   private
 
-  def send_sms(phone_number, activate_code)
-    account_sid = ENV['TWILIO_ACCOUNT_SID']
-    auth_token  = ENV['TWILIO_AUTH_TOKEN']
-    message = 'Your HelpCoop activation number is '+ activate_code +'. Please enter this number in the HelpCoop app to activate.'
-    @client = Twilio::REST::Client.new account_sid, auth_token
-    @client.account.messages.create({
-      :from => '+14157809231',
-      :to => phone_number,
-      :body => message
-    })
-  end
+  # def send_sms(phone_number, activate_code)
+  #   account_sid = ENV['TWILIO_ACCOUNT_SID']
+  #   auth_token  = ENV['TWILIO_AUTH_TOKEN']
+  #   message = 'Your HelpCoop activation number is '+ activate_code +'. Please enter this number in the HelpCoop app to activate.'
+  #   @client = Twilio::REST::Client.new account_sid, auth_token
+  #   @client.account.messages.create({
+  #     :from => '+14157809231',
+  #     :to => phone_number,
+  #     :body => message
+  #   })
+  # end
 
   def update_user(phone_number, email, address, name, description)
     token = generate_token

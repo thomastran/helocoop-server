@@ -43,6 +43,8 @@ Rails.application.routes.draw do
   post 'users/rating' => 'users#rating'
   post 'users/getinstanceid' => 'users#get_instance_id'
 
+  # Voip Branch
+
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
   #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
