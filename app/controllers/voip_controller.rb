@@ -98,9 +98,9 @@ class VoipController < ApplicationController
 
   def get_instance_id
     if params.include?(:instance_id) and params.include?(:token)
-      if User.exists?(:token => params[:token])
+      if UsersVoip.exists?(:token => params[:token])
         user_temp = {:instance_id => params[:instance_id]}
-        user = User.find_by(:token => params[:token])
+        user = UsersVoip.find_by(:token => params[:token])
         if user.update(user_temp)
           success = true
           message = 'Update instance_id successfully'
@@ -124,8 +124,8 @@ class VoipController < ApplicationController
   def turn_off_samaritan
     if params.include?(:token)
       user_temp = {:available => false}
-      if User.exists?(:token => params[:token])
-        user = User.find_by(:token => params[:token])
+      if UsersVoip.exists?(:token => params[:token])
+        user = UsersVoip.find_by(:token => params[:token])
         if user.update user_temp
           success = true
           message = 'Turn off Samaritan successfully'
@@ -148,8 +148,8 @@ class VoipController < ApplicationController
   def turn_on_samaritan
     if params.include?(:token)
       user_update = {:available => true}
-      if User.exists?(:token => params[:token])
-        user = User.find_by(:token => params[:token])
+      if UsersVoip.exists?(:token => params[:token])
+        user = UsersVoip.find_by(:token => params[:token])
         if user.update user_update
           success = true
           message = 'Update available successfully !'
