@@ -329,6 +329,7 @@ class UsersController < ApplicationController
   def learn_ruby
     # user = User.find_by(:token => 'Coi1Y73r3-ZWg7qfV8YItw')
     # user.destroy
+    # Test new branch
     account_sid = ENV['TWILIO_ACCOUNT_SID']
     auth_token  = ENV['TWILIO_AUTH_TOKEN']
     @client = Twilio::REST::Client.new account_sid, auth_token
