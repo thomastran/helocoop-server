@@ -25,7 +25,7 @@ class UsersController < ApplicationController
 
   # get phone number from android device and send sms to that phone number
   def request_code
-    activate_code = random_activate_code.to_s
+    activate_code = ApplicationHelper.random_activate_code.to_s
     if params.include?(:phone_number)
         # send_sms params[:phone_number], activate_code
       ApplicationHelper.send_sms params[:phone_number], activate_code
@@ -97,7 +97,7 @@ class UsersController < ApplicationController
       address = params[:address]
       email = params[:email]
       description = params[:description]
-      render json: update_user(phone_number, email, address, name, description)
+      render json: ApplicationHelper.update_user(phone_number, email, address, name, description)
     else
       result = {:success => false, :message => 'please check the paramaters'}
       render json: result
@@ -223,10 +223,10 @@ class UsersController < ApplicationController
     if params.include?(:token) and params.include?(:name_room)
       if User.exists?(:token => params[:token])
         user = User.find_by(token: params[:token])
-        distances = find_nearest_people user, 2
+        distances = ApplicationHelper.find_nearest_people user, 2
         if distances.length >= 1
-          send_data_to_devices distances, user, params[:name_room]
-          call_client_to_join_conference distances, params[:name_room], user
+          ApplicationHelper.send_data_to_devices distances, user, params[:name_room]
+          ApplicationHelper.call_client_to_join_conference distances, params[:name_room], user
         end
         success = true
         message = 'successfully'
@@ -245,37 +245,37 @@ class UsersController < ApplicationController
   end
 
   # fuction create new log conference room (caller, room_name, participants)
-  def log_conference_call(name_room)
-    account_sid = ENV['TWILIO_ACCOUNT_SID']
-    auth_token  = ENV['TWILIO_AUTH_TOKEN']
-    @client = Twilio::REST::Client.new account_sid, auth_token
-    if Log.exists?(:name_room => name_room)
-      log = Log.find_by(name_room: name_room)
-      if log.id_conference.eql?(nil)
-        cf_id = nil
-        statuses = ["init", "in-progress", "completed"]
-        statuses.each do |status|
-          @client.account.conferences.list({
-            :status => status,
-            :friendly_name => name_room}).each do |conference|
-              cf_id = conference.sid
-              Rails.logger.info "init"
-            end
-        end
-        if !cf_id.eql?(nil)
-          log_temp = {:id_conference => cf_id}
-          log.update log_temp
-        end
-      end
-    end
-  end
+  # def log_conference_call(name_room)
+  #   account_sid = ENV['TWILIO_ACCOUNT_SID']
+  #   auth_token  = ENV['TWILIO_AUTH_TOKEN']
+  #   @client = Twilio::REST::Client.new account_sid, auth_token
+  #   if Log.exists?(:name_room => name_room)
+  #     log = Log.find_by(name_room: name_room)
+  #     if log.id_conference.eql?(nil)
+  #       cf_id = nil
+  #       statuses = ["init", "in-progress", "completed"]
+  #       statuses.each do |status|
+  #         @client.account.conferences.list({
+  #           :status => status,
+  #           :friendly_name => name_room}).each do |conference|
+  #             cf_id = conference.sid
+  #             Rails.logger.info "init"
+  #           end
+  #       end
+  #       if !cf_id.eql?(nil)
+  #         log_temp = {:id_conference => cf_id}
+  #         log.update log_temp
+  #       end
+  #     end
+  #   end
+  # end
 
   def twilio
-    render xml: call_conference(params[:name_room], params[:participants], params[:is_from_caller], params[:name_of_caller]).to_xml
+    render xml: ApplicationHelper.call_conference(params[:name_room], params[:participants], params[:is_from_caller], params[:name_of_caller]).to_xml
   end
 
   def rating
-    if save_rating params[:token], params[:rateList], params[:nameRoom]
+    if ApplicationHelper.save_rating params[:token], params[:rateList], params[:nameRoom]
       success = true
       message = "successfully"
     else
@@ -285,46 +285,31 @@ class UsersController < ApplicationController
     render json: {:success => success, :message => message}
   end
 
-  def save_rating(voter_token, arr_voted_tokens, name_room)
-    if User.exists?(:token => voter_token)
-      user = User.find_by(token: voter_token)
-      log = Log.find_by(name_room: name_room)
-      arr_voted_tokens.each do |arr|
-        user_voted = User.find_by(token: arr[:token])
-        if !user_voted.eql?(nil)
-          user_voted.rates.create(
-            rate_status: arr[:rateStatus],
-            voter_id: user.id,
-            voter_name: user.name,
-            user_name: user_voted.name,
-            room_name: name_room,
-            log_id: log.id
-            )
-        end
-      end
-      result = true
-    else
-      result = false
-    end
-    return result
-  end
+  # def save_rating(voter_token, arr_voted_tokens, name_room)
+  #   if User.exists?(:token => voter_token)
+  #     user = User.find_by(token: voter_token)
+  #     log = Log.find_by(name_room: name_room)
+  #     arr_voted_tokens.each do |arr|
+  #       user_voted = User.find_by(token: arr[:token])
+  #       if !user_voted.eql?(nil)
+  #         user_voted.rates.create(
+  #           rate_status: arr[:rateStatus],
+  #           voter_id: user.id,
+  #           voter_name: user.name,
+  #           user_name: user_voted.name,
+  #           room_name: name_room,
+  #           log_id: log.id
+  #           )
+  #       end
+  #     end
+  #     result = true
+  #   else
+  #     result = false
+  #   end
+  #   return result
+  # end
 
-  def send_data_to_devices(distances, initilial_user, name_room)
-    authorization = 'key=AIzaSyC6aXtvQBxqEueZ3MYN9EmSp3Kqv1JY-EM'
-    header = {:Authorization => authorization, :content_type => 'application/json'}
-    distances.each_with_index do |distance, index|
-      distances_empty = []
-      distances_temp = distances_empty + distances
-      distances_temp.delete_at(index)
-      data = {:data =>
-                {:gcm_initial_user => initilial_user,
-                 :gcm_users => distances_temp,
-                 :gcm_name_room => name_room},
-                 :to => distance.instance_id
-             }.to_json
-      RestClient.post 'https://gcm-http.googleapis.com/gcm/send', data, header
-    end
-  end
+
 
   # Just testing result here
   def learn_ruby
@@ -344,6 +329,22 @@ class UsersController < ApplicationController
   end
   private
 
+  # def send_data_to_devices(distances, initilial_user, name_room)
+  #   authorization = 'key=AIzaSyC6aXtvQBxqEueZ3MYN9EmSp3Kqv1JY-EM'
+  #   header = {:Authorization => authorization, :content_type => 'application/json'}
+  #   distances.each_with_index do |distance, index|
+  #     distances_empty = []
+  #     distances_temp = distances_empty + distances
+  #     distances_temp.delete_at(index)
+  #     data = {:data =>
+  #               {:gcm_initial_user => initilial_user,
+  #                :gcm_users => distances_temp,
+  #                :gcm_name_room => name_room},
+  #                :to => distance.instance_id
+  #            }.to_json
+  #     RestClient.post 'https://gcm-http.googleapis.com/gcm/send', data, header
+  #   end
+  # end
   # def send_sms(phone_number, activate_code)
   #   account_sid = ENV['TWILIO_ACCOUNT_SID']
   #   auth_token  = ENV['TWILIO_AUTH_TOKEN']
@@ -356,123 +357,123 @@ class UsersController < ApplicationController
   #   })
   # end
 
-  def update_user(phone_number, email, address, name, description)
-    token = generate_token
-    user_temp = { :email => email, :address => address, :name => name, :token => token, :description => description }
-    user = User.find_by(phone_number: phone_number)
-    if user.update(user_temp)
-      success = true
-      message = 'updated successfully'
-      token_response = token
-    else
-      success = false
-      message = 'updated unsuccessfully'
-      token_response = nil
-    end
-    result = Info_Response.new(success, message, token_response)
-    return result
-  end
+  # def update_user(phone_number, email, address, name, description)
+  #   token = generate_token
+  #   user_temp = { :email => email, :address => address, :name => name, :token => token, :description => description }
+  #   user = User.find_by(phone_number: phone_number)
+  #   if user.update(user_temp)
+  #     success = true
+  #     message = 'updated successfully'
+  #     token_response = token
+  #   else
+  #     success = false
+  #     message = 'updated unsuccessfully'
+  #     token_response = nil
+  #   end
+  #   result = Info_Response.new(success, message, token_response)
+  #   return result
+  # end
 
-  def find_nearest_people(user_initial, people_limit)
-    distances = []
-    users = []
-    User.all.each do |user|
-      if user.available && !user.token.eql?(user_initial.token)
-        users.push user
-      end
-    end
-    # users = User.where("available = ?", true)
-    users.each do |user|
-      distance = caculate_location(user_initial, user)
-      # distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
-      if distance < 10
-        distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address, user.token, user.instance_id))
-      end
-    end
-    distances.sort! { |a,b| a.getMile <=> b.getMile }
-    return distances.take(people_limit)
-  end
+  # def find_nearest_people(user_initial, people_limit)
+  #   distances = []
+  #   users = []
+  #   User.all.each do |user|
+  #     if user.available && !user.token.eql?(user_initial.token)
+  #       users.push user
+  #     end
+  #   end
+  #   # users = User.where("available = ?", true)
+  #   users.each do |user|
+  #     distance = caculate_location(user_initial, user)
+  #     # distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
+  #     if distance < 10
+  #       distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address, user.token, user.instance_id))
+  #     end
+  #   end
+  #   distances.sort! { |a,b| a.getMile <=> b.getMile }
+  #   return distances.take(people_limit)
+  # end
 
-  def call_client_to_join_conference(distances, name_room, initilial_user)
-    account_sid = ENV['TWILIO_ACCOUNT_SID']
-    auth_token  = ENV['TWILIO_AUTH_TOKEN']
-    @client = Twilio::REST::Client.new account_sid, auth_token
-    phone_number = '+14157809231'
-    is_from_caller = true
-    name_of_caller = initilial_user.name.delete(' ')
+  # def call_client_to_join_conference(distances, name_room, initilial_user)
+  #   account_sid = ENV['TWILIO_ACCOUNT_SID']
+  #   auth_token  = ENV['TWILIO_AUTH_TOKEN']
+  #   @client = Twilio::REST::Client.new account_sid, auth_token
+  #   phone_number = '+14157809231'
+  #   is_from_caller = true
+  #   name_of_caller = initilial_user.name.delete(' ')
+  #
+  #   # Create log for callconference
+  #   log_temp = {:name_room => name_room, :participants => distances.length + 1, :caller => initilial_user.name, :user_id => initilial_user.id}
+  #   log = Log.new log_temp
+  #   log.save
+  #   # done
+  #
+  #   url = "http://162.242.175.133/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ name_of_caller }"
+  #   # Call to initilial_user first
+  #   @client.account.calls.create(
+  #     :url => url,
+  #     :to => initilial_user.phone_number,
+  #     :from => phone_number
+  #   )
+  #   # Call to the remaining users
+  #   is_from_caller = false
+  #   url = "http://162.242.175.133/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ name_of_caller }"
+  #   distances.each do |distance|
+  #     @client.account.calls.create(
+  #       :url => url,
+  #       :to => distance.phone_number,
+  #       :from => phone_number
+  #     )
+  #   end
+  # end
 
-    # Create log for callconference
-    log_temp = {:name_room => name_room, :participants => distances.length + 1, :caller => initilial_user.name, :user_id => initilial_user.id}
-    log = Log.new log_temp
-    log.save
-    # done
+  # def call_conference(name_room, participants, is_from_caller, name_of_caller)
+  #   message = ApplicationHelper.say_message is_from_caller, participants, name_of_caller
+  #   ApplicationHelper.log_conference_call name_room
+  #   Twilio::TwiML::Response.new do |response|
+  #     response.Say message
+  #     response.Dial callerId: params[:Caller] do |dial|
+  #       dial.Conference name_room,
+  #         waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
+  #         muted:  "false",
+  #         startConferenceOnEnter: "true",
+  #         endConferenceOnExit: "true"
+  #     end
+  #   end
+  # end
 
-    url = "http://162.242.175.133/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ name_of_caller }"
-    # Call to initilial_user first
-    @client.account.calls.create(
-      :url => url,
-      :to => initilial_user.phone_number,
-      :from => phone_number
-    )
-    # Call to the remaining users
-    is_from_caller = false
-    url = "http://162.242.175.133/users/callconference?name_room=#{ name_room }&participants=#{ distances.length }&is_from_caller=#{ is_from_caller }&name_of_caller=#{ name_of_caller }"
-    distances.each do |distance|
-      @client.account.calls.create(
-        :url => url,
-        :to => distance.phone_number,
-        :from => phone_number
-      )
-    end
-  end
+  # def say_message(is_from_caller, participants, name_of_caller)
+  #   participants_temp = participants.to_i
+  #   if is_from_caller.eql?("true")
+  #     if participants_temp.eql?(1)
+  #       message = 'We have found 1 person ready to help you '
+  #     elsif participants_temp >= 2
+  #       message = "We have found #{ participants_temp } people ready to help you "
+  #     else
+  #       message = 'You have joined the conference.'
+  #     end
+  #   else
+  #     message = "#{ name_of_caller } need your help, You have joined the conference."
+  #   end
+  #   return message
+  # end
 
-  def call_conference(name_room, participants, is_from_caller, name_of_caller)
-    message = say_message is_from_caller, participants, name_of_caller
-    log_conference_call name_room
-    Twilio::TwiML::Response.new do |response|
-      response.Say message
-      response.Dial callerId: params[:Caller] do |dial|
-        dial.Conference name_room,
-          waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
-          muted:  "false",
-          startConferenceOnEnter: "true",
-          endConferenceOnExit: "true"
-      end
-    end
-  end
+  # def random_activate_code
+  #   prng = Random.new
+  #   prng.rand(100000..999999)
+  # end
 
-  def say_message(is_from_caller, participants, name_of_caller)
-    participants_temp = participants.to_i
-    if is_from_caller.eql?("true")
-      if participants_temp.eql?(1)
-        message = 'We have found 1 person ready to help you '
-      elsif participants_temp >= 2
-        message = "We have found #{ participants_temp } people ready to help you "
-      else
-        message = 'You have joined the conference.'
-      end
-    else
-      message = "#{ name_of_caller } need your help, You have joined the conference."
-    end
-    return message
-  end
+  # def generate_token
+  #     token = loop do
+  #       random_token = SecureRandom.urlsafe_base64(nil, false)
+  #       break random_token unless User.exists?(:token => random_token)
+  #     end
+  #     return token
+  # end
 
-  def random_activate_code
-    prng = Random.new
-    prng.rand(100000..999999)
-  end
-
-  def generate_token
-      token = loop do
-        random_token = SecureRandom.urlsafe_base64(nil, false)
-        break random_token unless User.exists?(:token => random_token)
-      end
-      return token
-  end
-
-  def caculate_location(user_first, user_second)
-    Geocoder::Calculations.distance_between([user_first.latitude, user_first.longitude], [user_second.latitude, user_second.longitude])
-  end
+  # def caculate_location(user_first, user_second)
+  #   Geocoder::Calculations.distance_between([user_first.latitude, user_first.longitude], [user_second.latitude, user_second.longitude])
+  # end
 
   def request_to_gcm(distances)
     distances.each {|distance| request_to_device distance.getInstanceId}
