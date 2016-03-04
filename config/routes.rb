@@ -53,6 +53,8 @@ Rails.application.routes.draw do
   post 'voip/turnon' => 'voip#turn_on_samaritan'
   post 'voip/turnoff' => 'voip#turn_off_samaritan'
 
+  post 'voip/generatetoken' => 'voip#generate_token'
+
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
   #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase

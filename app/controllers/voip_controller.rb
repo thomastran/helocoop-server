@@ -1,6 +1,26 @@
 class VoipController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
+  def generate_token
+    if params.include?(:from_token)
+      if UsersVoip.exists?(:token => params[:from_token])
+        token = ::TwilioCapability.generate(params[:from_token])
+        success = true
+        message = 'generate token successfully'
+      else
+        token = nil
+        success = false
+        message = 'token does not exists'
+      end
+    else
+      token = nil
+      success = false
+      message = 'Please check paramaters'
+    end
+    result = {:success => success, :token => token, :message => message}
+    render json: result, status: 200
+  end
+
   def request_code
     activate_code = ApplicationHelper.random_activate_code.to_s
     if params.include?(:phone_number)
