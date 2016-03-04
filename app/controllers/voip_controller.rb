@@ -22,7 +22,7 @@ class VoipController < ApplicationController
   end
 
   def connect
-    render xml: twilio_conference(params.include?(:name_room)).to_xml
+    render xml: twilio_conference(params[:name_room]).to_xml
     # if params.include?(:token) and params.include?(:name_room)
     #   if UsersVoip.exists?(:token)
     #
