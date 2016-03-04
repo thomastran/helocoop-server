@@ -22,13 +22,17 @@ class VoipController < ApplicationController
   end
 
   def connect
-    render xml: twilio_conference(name_room, caller_name).to_xml
+    if params.include?(:token) and params.include?(:name_room)
+      if UsersVoip.exists?(:token)
+        render xml: twilio_conference(params.include?(:name_room)).to_xml
+      end
+    end
   end
 
-  def twilio_conference(name_room, caller_name)
+  def twilio_conference(name_room)
     Twilio::TwiML::Response.new do |response|
       response.Say "You have joined the conference."
-      response.Dial callerId: caller_name do |dial|
+      response.Dial callerId: "twilio" do |dial|
           dial.Conference name_room,
             waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
             muted:  "false",
