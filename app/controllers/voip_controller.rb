@@ -21,6 +21,49 @@ class VoipController < ApplicationController
     render json: result, status: 200
   end
 
+  def connect
+    render xml: twilio_conference(name_room, caller_name).to_xml
+  end
+
+  def twilio_conference(name_room, caller_name)
+    Twilio::TwiML::Response.new do |response|
+      response.Say "You have joined the conference."
+      response.Dial callerId: caller_name do |dial|
+          dial.Conference name_room,
+            waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
+            muted:  "false",
+            startConferenceOnEnter: "true",
+            endConferenceOnExit: "true"
+      end
+    end
+  end
+
+  # initializing a new room, calling to other phone number to join the room
+  def make_conference_call
+    if params.include?(:token) and params.include?(:name_room)
+      if UsersVoip.exists?(:token => params[:token])
+        user = UsersVoip.find_by(token: params[:token])
+        distances = ApplicationHelper.find_nearest_people_voip user, 2
+        if distances.length >= 1
+          ApplicationHelper.send_data_to_devices distances, user, params[:name_room]
+          # ApplicationHelper.call_client_to_join_conference distances, params[:name_room], user
+        end
+        success = true
+        message = 'successfully'
+      else
+        success = false
+        message = 'token does not exist '
+        distances = nil
+      end
+    else
+      success = false
+      message = 'please check your paramaters again'
+      distances = nil
+    end
+    result = {:success => success, :message => message, :distances => distances, :name_room => params[:name_room]}
+    render json: result
+  end
+
   def request_code
     activate_code = ApplicationHelper.random_activate_code.to_s
     if params.include?(:phone_number)

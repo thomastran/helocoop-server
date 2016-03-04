@@ -119,6 +119,26 @@ module ApplicationHelper
     return distances.take(people_limit)
   end
 
+  def ApplicationHelper.find_nearest_people_voip(user_initial, people_limit)
+    distances = []
+    users = []
+    UsersVoip.all.each do |user|
+      if user.available && !user.token.eql?(user_initial.token)
+        users.push user
+      end
+    end
+    # users = User.where("available = ?", true)
+    users.each do |user|
+      distance = ApplicationHelper.caculate_location(user_initial, user)
+      # distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
+      if distance < 10
+        distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address, user.token, user.instance_id))
+      end
+    end
+    distances.sort! { |a,b| a.getMile <=> b.getMile }
+    return distances.take(people_limit)
+  end
+
   def ApplicationHelper.say_message(is_from_caller, participants, name_of_caller)
     participants_temp = participants.to_i
     if is_from_caller.eql?("true")
