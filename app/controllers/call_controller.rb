@@ -2,7 +2,7 @@ class CallController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
   def connect
-    render xml: twilio_reponse.to_xml
+    render xml: twilio.to_xml
   end
 
   def showConferenceStatus
@@ -15,7 +15,7 @@ class CallController < ApplicationController
     Twilio::TwiML::Response.new do |response|
       response.Say "You have joined the conference."
       response.Dial callerId: params[:Caller] do |dial|
-          dial.Conference "conference",
+          dial.Conference "Conference",
             waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
             muted:  "false",
             startConferenceOnEnter: "true",
