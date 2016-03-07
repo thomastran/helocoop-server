@@ -92,6 +92,31 @@ class VoipController < ApplicationController
     render json: result, status: 200
   end
 
+  # change information name, email, address by param token
+  def change_info
+      if params.include?(:token) and params.include?(:name) and params.include?(:address) and params.include?(:email) and params.include?(:description)
+        if UsersVoip.exists?(:token => params[:token])
+          user_temp = {:name => params[:name], :address => params[:address], :email => params[:email], :description => params[:description]}
+          user = UsersVoip.find_by(:token => params[:token])
+          if user.update user_temp
+            success = true
+            message = 'Updated successfully'
+          else
+            success = false
+            message = 'Something wrong happened with database'
+          end
+        else
+          success = false
+          message = 'Token does not exist'
+        end
+      else
+        success = false
+        message = 'Please check your parameters again'
+      end
+      result = {:success => success, :message => message}
+      render json: result
+  end
+
 
   def verify_code
     if params.include?(:phone_number) and params.include?(:activate_code)

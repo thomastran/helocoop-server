@@ -50,6 +50,7 @@ Rails.application.routes.draw do
   post 'voip/updatelocationservice' => 'voip#update_location_service'
   post 'voip/getinstanceid' => 'voip#get_instance_id'
   post 'voip/updatelocation' => 'voip#update_location'
+  post 'voip/changeinfo' => 'voip#change_info'
   post 'voip/turnon' => 'voip#turn_on_samaritan'
   post 'voip/turnoff' => 'voip#turn_off_samaritan'
 
