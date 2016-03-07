@@ -1,4 +1,4 @@
 class UsersVoip < ActiveRecord::Base
-  has_many :log_voips, dependent: :destroy
-  has_many :rate_voips, dependent: :destroy
+  has_many :logvoips, dependent: :destroy
+  has_many :ratevoips, dependent: :destroy
 end

@@ -1,3 +1,3 @@
 class RateVoip < ActiveRecord::Base
-  belongs_to :users_voip
+  belongs_to :usersvoip
 end
