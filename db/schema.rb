@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160303071055) do
+ActiveRecord::Schema.define(version: 20160307085444) do
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace",     limit: 255
@@ -71,6 +71,7 @@ ActiveRecord::Schema.define(version: 20160303071055) do
     t.integer  "user_id",       limit: 4
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
+    t.integer  "usersvoip_id",  limit: 4
   end
 
   create_table "logs", force: :cascade do |t|
@@ -85,15 +86,16 @@ ActiveRecord::Schema.define(version: 20160303071055) do
   end
 
   create_table "rate_voips", force: :cascade do |t|
-    t.integer  "user_id",     limit: 4
-    t.integer  "voter_id",    limit: 4
-    t.string   "voter_name",  limit: 255
-    t.string   "user_name",   limit: 255
-    t.string   "room_name",   limit: 255
-    t.string   "rate_status", limit: 255
-    t.integer  "log_id",      limit: 4
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.integer  "user_id",      limit: 4
+    t.integer  "voter_id",     limit: 4
+    t.string   "voter_name",   limit: 255
+    t.string   "user_name",    limit: 255
+    t.string   "room_name",    limit: 255
+    t.string   "rate_status",  limit: 255
+    t.integer  "log_id",       limit: 4
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+    t.integer  "usersvoip_id", limit: 4
   end
 
   create_table "rates", force: :cascade do |t|
