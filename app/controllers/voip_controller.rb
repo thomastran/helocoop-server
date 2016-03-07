@@ -278,4 +278,28 @@ class VoipController < ApplicationController
     render json: {:success => success, :message => message}
   end
 
+  def rating_test
+    if UsersVoip.exists?(:token => 'oVs5SQcBhkfkN-SpTUuapQ')
+      user = UsersVoip.find_by(token: 'oVs5SQcBhkfkN-SpTUuapQ')
+      # arr_voted_tokens.each do |arr|
+      #   user_voted = UsersVoip.find_by(token: arr[:token])
+      #   if !user_voted.eql?(nil)
+      #     user_voted.ratevoips.create(
+      #       rate_status: arr[:rateStatus],
+      #       voter_id: user.id,
+      #       voter_name: user.name,
+      #       user_name: user_voted.name
+      #     )
+      #   end
+      # end
+      user.rate_voips.create(
+          rate_status: 'good'
+      )
+      result = true
+    else
+      result = false
+    end
+    render json: {:success => result}
+  end
+
 end

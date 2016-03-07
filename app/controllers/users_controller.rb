@@ -5,7 +5,7 @@ class UsersController < ApplicationController
     phone_numbers = ['+84972341808', '+84986503988']
     email = 'Samaritan@gmail.com'
     phone_numbers.each do |phone_number|
-      token_temp = generate_token
+      token_temp = ApplicationHelper.generate_token
       latitude_temp = random_location
       longitude_temp = random_location
       user_temp = {
@@ -17,7 +17,7 @@ class UsersController < ApplicationController
         :instance_id => token_temp,
         :available => true
       }
-      user = User.new(user_temp)
+      user = UsersVoip.new(user_temp)
       user.save
     end
     render json: {:ok => 'ok'}
