@@ -249,7 +249,7 @@ module ApplicationHelper
       user = UsersVoip.find_by(token: voter_token)
       log = LogVoip.find_by(name_room: name_room)
       arr_voted_tokens.each do |arr|
-        user_voted = User.find_by(token: arr[:token])
+        user_voted = UsersVoip.find_by(token: arr[:token])
         if !user_voted.eql?(nil)
           user_voted.rates.create(
             rate_status: arr[:rateStatus],
