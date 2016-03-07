@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160303071055) do
+ActiveRecord::Schema.define(version: 20160307085444) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,6 +58,7 @@ ActiveRecord::Schema.define(version: 20160303071055) do
     t.integer  "user_id"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
+    t.integer  "usersvoip_id"
   end
 
   create_table "logs", force: :cascade do |t|
@@ -79,8 +80,9 @@ ActiveRecord::Schema.define(version: 20160303071055) do
     t.string   "room_name"
     t.string   "rate_status"
     t.integer  "log_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.integer  "usersvoip_id"
   end
 
   create_table "rates", force: :cascade do |t|
