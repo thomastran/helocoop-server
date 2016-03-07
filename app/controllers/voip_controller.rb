@@ -49,7 +49,7 @@ class VoipController < ApplicationController
     if params.include?(:token) and params.include?(:name_room)
       if UsersVoip.exists?(:token => params[:token])
         user = UsersVoip.find_by(token: params[:token])
-        distances = ApplicationHelper.find_nearest_people_voip user, 1
+        distances = ApplicationHelper.find_nearest_people_voip user, 2
         if distances.length >= 1
           ApplicationHelper.send_data_to_devices distances, user, params[:name_room]
           # Create log for conference
