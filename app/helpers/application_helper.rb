@@ -251,7 +251,7 @@ module ApplicationHelper
       arr_voted_tokens.each do |arr|
         user_voted = UsersVoip.find_by(token: arr[:token])
         if !user_voted.eql?(nil)
-          user_voted.rate_voips.create(
+          user_voted.ratevoips.create(
             rate_status: arr[:rateStatus],
             voter_id: user.id,
             voter_name: user.name,
