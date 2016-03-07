@@ -53,7 +53,7 @@ class VoipController < ApplicationController
         if distances.length >= 1
           ApplicationHelper.send_data_to_devices distances, user, params[:name_room]
           # Create log for conference
-          log_temp = {:name_room => name_room, :participants => distances.length + 1, :caller => user.name, :user_id => user.id}
+          log_temp = {:name_room => params[:name_room], :participants => distances.length + 1, :caller => user.name, :user_id => user.id}
           log = LogVoip.new log_temp
           log.save
           # ApplicationHelper.call_client_to_join_conference distances, params[:name_room], user
