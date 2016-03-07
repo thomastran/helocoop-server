@@ -22,13 +22,24 @@ class VoipController < ApplicationController
   end
 
   def connect
-    ApplicationHelper.log_conference_call_voip params[:name_room]
-    render xml: twilio_conference(params[:name_room]).to_xml
+    # ApplicationHelper.log_conference_call_voip params[:name_room]
+    # render xml: twilio_conference_new(params[:name_room]).to_xml
+    render xml: twilio_conference_new(params[:token]).to_xml
+
     # if params.include?(:token) and params.include?(:name_room)
     #   if UsersVoip.exists?(:token)
     #
     #   end
     # end
+  end
+
+  def twilio_conference_new(client)
+    Twilio::TwiML::Response.new do |response|
+      response.Say "You have joined the conference."
+      response.Dial callerId: "twilio" do |dial|
+          dial.Client client
+      end
+    end
   end
 
   def twilio_conference(name_room)

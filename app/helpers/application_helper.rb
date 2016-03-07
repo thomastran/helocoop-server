@@ -250,16 +250,16 @@ module ApplicationHelper
       log = LogVoip.find_by(name_room: name_room)
       arr_voted_tokens.each do |arr|
         user_voted = UsersVoip.find_by(token: arr[:token])
-        if !user_voted.eql?(nil)
-          user_voted.rate_voips.create(
-            rate_status: arr[:rateStatus],
-            voter_id: user.id,
-            voter_name: user.name,
-            user_name: user_voted.name,
-            room_name: name_room,
-            log_id: log.id
-            )
-        end
+        # if !user_voted.eql?(nil)
+        #   user_voted.rate_voips.create(
+        #     rate_status: arr[:rateStatus],
+        #     voter_id: user.id,
+        #     voter_name: user.name,
+        #     user_name: user_voted.name,
+        #     room_name: name_room,
+        #     log_id: log.id
+        #     )
+        # end
       end
       result = true
     else
