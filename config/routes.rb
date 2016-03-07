@@ -57,6 +57,8 @@ Rails.application.routes.draw do
   post 'voip/generatetoken' => 'voip#generate_token'
   post 'voip/makeconferencecall' => 'voip#make_conference_call'
   post 'voip/connect' => 'voip#connect'
+  post 'voip/rating' => 'voip#rating'
+
 
 
   # Example of named routfe that can be invoked with purchase_url(id: product.id)

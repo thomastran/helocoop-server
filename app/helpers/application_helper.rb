@@ -195,10 +195,59 @@ module ApplicationHelper
     end
   end
 
+  def ApplicationHelper.log_conference_call_voip(name_room)
+    account_sid = ENV['TWILIO_ACCOUNT_SID']
+    auth_token  = ENV['TWILIO_AUTH_TOKEN']
+    @client = Twilio::REST::Client.new account_sid, auth_token
+    if LogVoip.exists?(:name_room => name_room)
+      log = LogVoip.find_by(name_room: name_room)
+      if log.id_conference.eql?(nil)
+        cf_id = nil
+        statuses = ["init", "in-progress", "completed"]
+        statuses.each do |status|
+          @client.account.conferences.list({
+            :status => status,
+            :friendly_name => name_room}).each do |conference|
+              cf_id = conference.sid
+              Rails.logger.info "init"
+            end
+        end
+        if !cf_id.eql?(nil)
+          log_temp = {:id_conference => cf_id}
+          log.update log_temp
+        end
+      end
+    end
+  end
+
   def ApplicationHelper.save_rating(voter_token, arr_voted_tokens, name_room)
     if User.exists?(:token => voter_token)
       user = User.find_by(token: voter_token)
       log = Log.find_by(name_room: name_room)
+      arr_voted_tokens.each do |arr|
+        user_voted = User.find_by(token: arr[:token])
+        if !user_voted.eql?(nil)
+          user_voted.rates.create(
+            rate_status: arr[:rateStatus],
+            voter_id: user.id,
+            voter_name: user.name,
+            user_name: user_voted.name,
+            room_name: name_room,
+            log_id: log.id
+            )
+        end
+      end
+      result = true
+    else
+      result = false
+    end
+    return result
+  end
+
+  def ApplicationHelper.save_rating_voip(voter_token, arr_voted_tokens, name_room)
+    if UsersVoip.exists?(:token => voter_token)
+      user = UsersVoip.find_by(token: voter_token)
+      log = LogVoip.find_by(name_room: name_room)
       arr_voted_tokens.each do |arr|
         user_voted = User.find_by(token: arr[:token])
         if !user_voted.eql?(nil)

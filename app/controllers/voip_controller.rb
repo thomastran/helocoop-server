@@ -22,6 +22,7 @@ class VoipController < ApplicationController
   end
 
   def connect
+    ApplicationHelper.log_conference_call_voip params[:name_room]
     render xml: twilio_conference(params[:name_room]).to_xml
     # if params.include?(:token) and params.include?(:name_room)
     #   if UsersVoip.exists?(:token)
@@ -51,6 +52,10 @@ class VoipController < ApplicationController
         distances = ApplicationHelper.find_nearest_people_voip user, 2
         if distances.length >= 1
           ApplicationHelper.send_data_to_devices distances, user, params[:name_room]
+          # Create log for conference
+          log_temp = {:name_room => name_room, :participants => distances.length + 1, :caller => user.name, :user_id => user.id}
+          log = LogVoip.new log_temp
+          log.save
           # ApplicationHelper.call_client_to_join_conference distances, params[:name_room], user
         end
         success = true
@@ -260,6 +265,17 @@ class VoipController < ApplicationController
     end
     result = {:success => success, :message => message}
     render json: result
+  end
+
+  def rating
+    if ApplicationHelper.save_rating_voip params[:token], params[:rateList], params[:nameRoom]
+      success = true
+      message = "successfully"
+    else
+      success = false
+      message = "unsuccessfully"
+    end
+    render json: {:success => success, :message => message}
   end
 
 end
