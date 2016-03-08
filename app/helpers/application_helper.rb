@@ -33,7 +33,8 @@ module ApplicationHelper
   end
 
   def ApplicationHelper.update_user_voip(phone_number, email, address, name, description)
-    token = ApplicationHelper.generate_token
+    token = ApplicationHelper.generate_token_voip
+
     user_temp = { :email => email, :address => address, :name => name, :token => token, :description => description }
     user = UsersVoip.find_by(phone_number: phone_number)
     if user.update(user_temp)
@@ -277,6 +278,14 @@ module ApplicationHelper
       token = loop do
         random_token = SecureRandom.urlsafe_base64(nil, false)
         break random_token unless User.exists?(:token => random_token)
+      end
+      return token
+  end
+
+  def ApplicationHelper.generate_token_voip
+      token = loop do
+        random_token = SecureRandom.urlsafe_base64(nil, false)
+        break random_token unless UsersVoip.exists?(:token => random_token)
       end
       return token
   end
