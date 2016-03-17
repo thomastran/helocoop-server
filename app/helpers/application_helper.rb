@@ -133,10 +133,10 @@ module ApplicationHelper
       distance = ApplicationHelper.caculate_location(user_initial, user)
       # distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address))
       if distance < 10
-        distances.push(Distance.new(distance, user.phone_number, user.name, user.description, user.address, user.token, user.instance_id))
+        distances.push(DistanceVoip.new(distance, user.phone_number, user.name, user.description, user.address, user.token, user.instance_id, user.latitude, user.longitude))
       end
     end
-    distances.sort! { |a,b| a.getMile <=> b.getMile }
+    distances.sort! { |a,b| a.mile <=> b.mile }
     return distances.take(people_limit)
   end
 
