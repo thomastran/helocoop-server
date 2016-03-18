@@ -33,7 +33,7 @@ class VoipController < ApplicationController
 
   def twilio_conference(name_room)
     Twilio::TwiML::Response.new do |response|
-      response.Say "You have joined the conference."
+      response.Say "PLEASE HOLD, FINDING A HELPER NOW"
       response.Dial callerId: "twilio" do |dial|
           dial.Conference name_room,
             waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
