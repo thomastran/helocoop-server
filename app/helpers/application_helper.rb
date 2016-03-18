@@ -291,7 +291,7 @@ module ApplicationHelper
   end
 
   def ApplicationHelper.caculate_location(user_first, user_second)
-    Geocoder::Calculations.distance_between([user_first.latitude, user_first.longitude], [user_second.latitude, user_second.longitude])
+    Geocoder::Calculations.distance_between([user_first.latitude, user_first.longitude], [user_second.latitude, user_second.longitude]).round(2)
   end
 
 end
