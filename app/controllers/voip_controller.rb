@@ -23,7 +23,7 @@ class VoipController < ApplicationController
 
   def connect
     ApplicationHelper.log_conference_call_voip params[:name_room]
-    render xml: twilio_conference(params[:name_room]).to_xml
+    render xml: twilio_conference(params[:name_room], params[:is_from_caller]).to_xml
     # if params.include?(:token) and params.include?(:name_room)
     #   if UsersVoip.exists?(:token)
     #
@@ -31,9 +31,14 @@ class VoipController < ApplicationController
     # end
   end
 
-  def twilio_conference(name_room)
+  def twilio_conference(name_room, is_from_caller)
+    if is_from_caller.eql?('true')
+      message = "Please hold, finding a helper now !"
+    else
+      message = "Please hold. Connecting caller and Good Samaritan now"
+    end
     Twilio::TwiML::Response.new do |response|
-      response.Say "PLEASE HOLD, FINDING A HELPER NOW"
+      response.Say message
       response.Dial callerId: "twilio" do |dial|
           dial.Conference name_room,
             waitUrl: "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical",
